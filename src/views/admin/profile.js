@@ -13,6 +13,7 @@ import {
   useToast,
   Spinner,
   Center,
+  useBreakpointValue,
 } from '@chakra-ui/react';
 import { useTranslation } from '../../hooks/useTranslation';
 import { useAuthFixed } from '../../hooks/useAuthFixed';
@@ -27,6 +28,14 @@ function Profile() {
 
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState(null);
+
+  // Responsive values
+  const isMobile = useBreakpointValue({ base: true, md: false });
+  const containerPadding = useBreakpointValue({ base: 4, md: 6 });
+  const headerSize = useBreakpointValue({ base: "md", lg: "lg" });
+  const avatarSize = useBreakpointValue({ base: "xl", lg: "2xl" });
+  const cardPadding = useBreakpointValue({ base: 4, md: 6 });
+  const spacing = useBreakpointValue({ base: 4, md: 6 });
 
   // Cargar perfil desde la base de datos (solo lectura)
   useEffect(() => {
@@ -207,39 +216,40 @@ function Profile() {
   }
 
   return (
-    <Box bg={bg} minH="100vh" pl="20px">
-      <VStack spacing={6} align="stretch">
+    <Box bg={bg} minH="100vh" p={containerPadding}>
+      <VStack spacing={spacing} align="stretch">
         {/* Header */}
-        <Box ml="7px">
-          <Heading mb={4} size="lg" color="brand.500">
+        <Box>
+          <Heading mb={4} size={headerSize} color="brand.500">
             {t('profile.title') || 'Perfil de Usuario'}
           </Heading>
         </Box>
 
         {/* Profile Overview */}
         <Card>
-          <HStack spacing={6} align="start">
-            <VStack spacing={4} align="center">
-              <Avatar
-                size="2xl"
-                name={`${profile.firstName} ${profile.lastName}`}
-                bg="brand.500"
-                color="white"
-                src={profile.avatarUrl}
-              />
-              <VStack spacing={1} align="center">
-                <Heading size="md">
-                  {profile.firstName} {profile.lastName}
-                </Heading>
-                <Badge colorScheme="green" variant="subtle">
-                  {profile.role}
-                </Badge>
+          {isMobile ? (
+            /* Vista Mobile - Layout vertical */
+            <VStack spacing={spacing} align="stretch">
+              <VStack spacing={4} align="center">
+                <Avatar
+                  size={avatarSize}
+                  name={`${profile.firstName} ${profile.lastName}`}
+                  bg="brand.500"
+                  color="white"
+                  src={profile.avatarUrl}
+                />
+                <VStack spacing={2} align="center">
+                  <Heading size="md" textAlign="center">
+                    {profile.firstName} {profile.lastName}
+                  </Heading>
+                  <Badge colorScheme="green" variant="subtle">
+                    {profile.role}
+                  </Badge>
+                </VStack>
               </VStack>
-            </VStack>
 
-            <VStack spacing={4} align="start" flex={1}>
-              <HStack spacing={4} w="full">
-                <Box flex={1}>
+              <VStack spacing={4} align="stretch">
+                <Box>
                   <Text fontSize="sm" fontWeight="medium" color="gray.700">
                     {t('profile.firstName') || 'Nombre'}
                   </Text>
@@ -247,7 +257,8 @@ function Profile() {
                     {profile.firstName}
                   </Text>
                 </Box>
-                <Box flex={1}>
+
+                <Box>
                   <Text fontSize="sm" fontWeight="medium" color="gray.700">
                     {t('profile.lastName') || 'Apellido'}
                   </Text>
@@ -255,10 +266,8 @@ function Profile() {
                     {profile.lastName}
                   </Text>
                 </Box>
-              </HStack>
 
-              <HStack spacing={4} w="full">
-                <Box flex={1}>
+                <Box>
                   <Text fontSize="sm" fontWeight="medium" color="gray.700">
                     {t('profile.email') || 'Email'}
                   </Text>
@@ -266,7 +275,8 @@ function Profile() {
                     {profile.email}
                   </Text>
                 </Box>
-                <Box flex={1}>
+
+                <Box>
                   <Text fontSize="sm" fontWeight="medium" color="gray.700">
                     {t('profile.phone') || 'Teléfono'}
                   </Text>
@@ -274,11 +284,70 @@ function Profile() {
                     {profile.phone || 'No especificado'}
                   </Text>
                 </Box>
-              </HStack>
-
-              
+              </VStack>
             </VStack>
-          </HStack>
+          ) : (
+            /* Vista Desktop - Layout horizontal */
+            <HStack spacing={6} align="start">
+              <VStack spacing={4} align="center">
+                <Avatar
+                  size={avatarSize}
+                  name={`${profile.firstName} ${profile.lastName}`}
+                  bg="brand.500"
+                  color="white"
+                  src={profile.avatarUrl}
+                />
+                <VStack spacing={1} align="center">
+                  <Heading size="md">
+                    {profile.firstName} {profile.lastName}
+                  </Heading>
+                  <Badge colorScheme="green" variant="subtle">
+                    {profile.role}
+                  </Badge>
+                </VStack>
+              </VStack>
+
+              <VStack spacing={4} align="start" flex={1}>
+                <HStack spacing={4} w="full">
+                  <Box flex={1}>
+                    <Text fontSize="sm" fontWeight="medium" color="gray.700">
+                      {t('profile.firstName') || 'Nombre'}
+                    </Text>
+                    <Text fontSize="sm" color="gray.900">
+                      {profile.firstName}
+                    </Text>
+                  </Box>
+                  <Box flex={1}>
+                    <Text fontSize="sm" fontWeight="medium" color="gray.700">
+                      {t('profile.lastName') || 'Apellido'}
+                    </Text>
+                    <Text fontSize="sm" color="gray.900">
+                      {profile.lastName}
+                    </Text>
+                  </Box>
+                </HStack>
+
+                <HStack spacing={4} w="full">
+                  <Box flex={1}>
+                    <Text fontSize="sm" fontWeight="medium" color="gray.700">
+                      {t('profile.email') || 'Email'}
+                    </Text>
+                    <Text fontSize="sm" color="gray.900">
+                      {profile.email}
+                    </Text>
+                  </Box>
+                  <Box flex={1}>
+                    <Text fontSize="sm" fontWeight="medium" color="gray.700">
+                      {t('profile.phone') || 'Teléfono'}
+                    </Text>
+                    <Text fontSize="sm" color="gray.900">
+                      {profile.phone || 'No especificado'}
+                    </Text>
+                  </Box>
+                </HStack>
+              </VStack>
+            </HStack>
+          )}
         </Card>
 
         

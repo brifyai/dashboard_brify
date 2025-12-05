@@ -283,7 +283,7 @@ function LoginFormFixed() {
 
         {/* Recordar sesión */}
         {isLogin && (
-          <HStack justify="space-between" w="full">
+          <HStack justify="center" w="full">
             <Checkbox
               isChecked={rememberMe}
               onChange={(e) => setRememberMe(e.target.checked)}
@@ -291,15 +291,6 @@ function LoginFormFixed() {
             >
               <Text fontSize="sm">Recordar sesión</Text>
             </Checkbox>
-            <Link
-              color="blue.500"
-              fontSize="sm"
-              onClick={() => navigate('/auth/forgot-password-fixed')}
-              cursor="pointer"
-              _hover={{ textDecoration: 'underline' }}
-            >
-              ¿Olvidaste tu contraseña?
-            </Link>
           </HStack>
         )}
 

@@ -414,9 +414,9 @@ function CRMDashboard() {
         <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} spacing={4}>
           <Card bg={cardBg}>
             <CardBody>
-              <Stat>
+              <Stat textAlign="center">
                 <StatLabel>
-                  <HStack spacing={2}>
+                  <HStack spacing={2} justify="center">
                     <MdPeople color="blue" />
                     <Text>Total Usuarios</Text>
                   </HStack>
@@ -432,9 +432,9 @@ function CRMDashboard() {
 
           <Card bg={cardBg}>
             <CardBody>
-              <Stat>
+              <Stat textAlign="center">
                 <StatLabel>
-                  <HStack spacing={2}>
+                  <HStack spacing={2} justify="center">
                     <MdPayment color="green" />
                     <Text>Total Pagos</Text>
                   </HStack>
@@ -450,9 +450,9 @@ function CRMDashboard() {
 
           <Card bg={cardBg}>
             <CardBody>
-              <Stat>
+              <Stat textAlign="center">
                 <StatLabel>
-                  <HStack spacing={2}>
+                  <HStack spacing={2} justify="center">
                     <MdTrendingUp color="purple" />
                     <Text>Ingresos Totales</Text>
                   </HStack>
@@ -469,9 +469,9 @@ function CRMDashboard() {
 
           <Card bg={cardBg}>
             <CardBody>
-              <Stat>
+              <Stat textAlign="center">
                 <StatLabel>
-                  <HStack spacing={2}>
+                  <HStack spacing={2} justify="center">
                     <MdDiamond color="orange" />
                     <Text>Planes Activos</Text>
                   </HStack>
@@ -560,67 +560,112 @@ function CRMDashboard() {
               </HStack>
             </CardHeader>
             <CardBody>
-              <TableContainer>
-                <Table variant="simple" size="sm">
-                  <Thead>
-                    <Tr>
-                      <Th>Usuario</Th>
-                      <Th>Estado</Th>
-                      <Th>Fecha</Th>
-                      <Th>Acciones</Th>
-                    </Tr>
-                  </Thead>
-                  <Tbody>
-                    {recentUsers.map((user) => (
-                      <Tr key={user.id}>
-                        <Td>
-                          <HStack spacing={3}>
-                            <Avatar size="sm" name={user.name} />
-                            <VStack align="start" spacing={0}>
-                              <Text fontSize="sm" fontWeight="medium">
-                                {user.name || 'Sin nombre'}
-                              </Text>
-                              <Text fontSize="xs" color="gray.500">
-                                {user.email}
-                              </Text>
-                            </VStack>
-                          </HStack>
-                        </Td>
-                        <Td>
-                          <Badge 
-                            colorScheme={getStatusColor(user.onboarding_status)} 
-                            variant="subtle"
-                            size="sm"
-                          >
-                            {user.onboarding_status}
-                          </Badge>
-                        </Td>
-                        <Td>
-                          <Text fontSize="sm">{formatDate(user.created_at)}</Text>
-                        </Td>
-                        <Td>
-                          <Menu>
-                            <MenuButton
-                              as={IconButton}
-                              icon={<MdMoreVert />}
-                              variant="ghost"
-                              size="sm"
-                            />
-                            <MenuList>
-                              <MenuItem 
-                                icon={<MdVisibility />}
-                                onClick={() => handleViewProfile(user)}
-                              >
-                                Ver Perfil
-                              </MenuItem>
-                            </MenuList>
-                          </Menu>
-                        </Td>
+              {/* Desktop: Tabla tradicional */}
+              <Box display={{ base: 'none', lg: 'block' }}>
+                <TableContainer>
+                  <Table variant="simple" size="sm">
+                    <Thead>
+                      <Tr>
+                        <Th>Usuario</Th>
+                        <Th>Estado</Th>
+                        <Th>Fecha</Th>
+                        <Th>Acciones</Th>
                       </Tr>
-                    ))}
-                  </Tbody>
-                </Table>
-              </TableContainer>
+                    </Thead>
+                    <Tbody>
+                      {recentUsers.map((user) => (
+                        <Tr key={user.id}>
+                          <Td>
+                            <HStack spacing={3}>
+                              <Avatar size="sm" name={user.name} />
+                              <VStack align="start" spacing={0}>
+                                <Text fontSize="sm" fontWeight="medium">
+                                  {user.name || 'Sin nombre'}
+                                </Text>
+                                <Text fontSize="xs" color="gray.500">
+                                  {user.email}
+                                </Text>
+                              </VStack>
+                            </HStack>
+                          </Td>
+                          <Td>
+                            <Badge 
+                              colorScheme={getStatusColor(user.onboarding_status)} 
+                              variant="subtle"
+                              size="sm"
+                            >
+                              {user.onboarding_status}
+                            </Badge>
+                          </Td>
+                          <Td>
+                            <Text fontSize="sm">{formatDate(user.created_at)}</Text>
+                          </Td>
+                          <Td>
+                            <Menu>
+                              <MenuButton
+                                as={IconButton}
+                                icon={<MdMoreVert />}
+                                variant="ghost"
+                                size="sm"
+                              />
+                              <MenuList>
+                                <MenuItem 
+                                  icon={<MdVisibility />}
+                                  onClick={() => handleViewProfile(user)}
+                                >
+                                  Ver Perfil
+                                </MenuItem>
+                              </MenuList>
+                            </Menu>
+                          </Td>
+                        </Tr>
+                      ))}
+                    </Tbody>
+                  </Table>
+                </TableContainer>
+              </Box>
+              
+              {/* Mobile: Cards sin scroll */}
+              <VStack display={{ base: 'flex', lg: 'none' }} spacing={3} align="stretch">
+                {recentUsers.map((user) => (
+                  <Card key={user.id} variant="outline" size="sm">
+                    <CardBody p={4}>
+                      <HStack spacing={3} mb={3}>
+                        <Avatar size="md" name={user.name} />
+                        <VStack align="start" spacing={1} flex={1}>
+                          <Text fontSize="sm" fontWeight="medium">
+                            {user.name || 'Sin nombre'}
+                          </Text>
+                          <Text fontSize="xs" color="gray.500">
+                            {user.email}
+                          </Text>
+                        </VStack>
+                        <Badge 
+                          colorScheme={getStatusColor(user.onboarding_status)} 
+                          variant="subtle"
+                          size="sm"
+                        >
+                          {user.onboarding_status}
+                        </Badge>
+                      </HStack>
+                      
+                      <HStack justify="space-between" align="center">
+                        <Text fontSize="xs" color="gray.600">
+                          {formatDate(user.created_at)}
+                        </Text>
+                        <Button 
+                          size="sm" 
+                          variant="ghost" 
+                          leftIcon={<MdVisibility />}
+                          onClick={() => handleViewProfile(user)}
+                        >
+                          Ver Perfil
+                        </Button>
+                      </HStack>
+                    </CardBody>
+                  </Card>
+                ))}
+              </VStack>
             </CardBody>
           </Card>
 
@@ -633,51 +678,95 @@ function CRMDashboard() {
               </HStack>
             </CardHeader>
             <CardBody>
-              <TableContainer>
-                <Table variant="simple" size="sm">
-                  <Thead>
-                    <Tr>
-                      <Th>Usuario</Th>
-                      <Th>Plan</Th>
-                      <Th>Monto</Th>
-                      <Th>Estado</Th>
-                    </Tr>
-                  </Thead>
-                  <Tbody>
-                    {recentPayments.map((payment) => (
-                      <Tr key={payment.id}>
-                        <Td>
-                          <VStack align="start" spacing={0}>
+              {/* Desktop: Tabla tradicional */}
+              <Box display={{ base: 'none', lg: 'block' }}>
+                <TableContainer>
+                  <Table variant="simple" size="sm">
+                    <Thead>
+                      <Tr>
+                        <Th>Usuario</Th>
+                        <Th>Plan</Th>
+                        <Th>Monto</Th>
+                        <Th>Estado</Th>
+                      </Tr>
+                    </Thead>
+                    <Tbody>
+                      {recentPayments.map((payment) => (
+                        <Tr key={payment.id}>
+                          <Td>
+                            <VStack align="start" spacing={0}>
+                              <Text fontSize="sm" fontWeight="medium">
+                                {payment.users?.name || 'Usuario'}
+                              </Text>
+                              <Text fontSize="xs" color="gray.500">
+                                {payment.users?.email}
+                              </Text>
+                            </VStack>
+                          </Td>
+                          <Td>
+                            <Text fontSize="sm">{payment.plans?.name || 'Plan'}</Text>
+                          </Td>
+                          <Td>
+                            <Text fontSize="sm" fontWeight="bold" color="green.600">
+                              {formatCurrency(payment.amount_usd)}
+                            </Text>
+                          </Td>
+                          <Td>
+                            <Badge 
+                              colorScheme={getStatusColor(payment.payment_status)} 
+                              variant="subtle"
+                              size="sm"
+                            >
+                              {payment.payment_status}
+                            </Badge>
+                          </Td>
+                        </Tr>
+                      ))}
+                    </Tbody>
+                  </Table>
+                </TableContainer>
+              </Box>
+              
+              {/* Mobile: Cards sin scroll */}
+              <VStack display={{ base: 'flex', lg: 'none' }} spacing={3} align="stretch">
+                {recentPayments.map((payment) => (
+                  <Card key={payment.id} variant="outline" size="sm">
+                    <CardBody p={4}>
+                      <VStack spacing={3} align="stretch">
+                        <HStack justify="space-between" align="start">
+                          <VStack align="start" spacing={1} flex={1}>
                             <Text fontSize="sm" fontWeight="medium">
                               {payment.users?.name || 'Usuario'}
                             </Text>
                             <Text fontSize="xs" color="gray.500">
                               {payment.users?.email}
                             </Text>
+                            <Text fontSize="xs" color="gray.600">
+                              {payment.plans?.name || 'Plan'}
+                            </Text>
                           </VStack>
-                        </Td>
-                        <Td>
-                          <Text fontSize="sm">{payment.plans?.name || 'Plan'}</Text>
-                        </Td>
-                        <Td>
-                          <Text fontSize="sm" fontWeight="bold" color="green.600">
-                            {formatCurrency(payment.amount_usd)}
-                          </Text>
-                        </Td>
-                        <Td>
-                          <Badge 
-                            colorScheme={getStatusColor(payment.payment_status)} 
-                            variant="subtle"
-                            size="sm"
-                          >
-                            {payment.payment_status}
-                          </Badge>
-                        </Td>
-                      </Tr>
-                    ))}
-                  </Tbody>
-                </Table>
-              </TableContainer>
+                          <VStack align="end" spacing={1}>
+                            <Text fontSize="sm" fontWeight="bold" color="green.600">
+                              {formatCurrency(payment.amount_usd)}
+                            </Text>
+                            <Badge 
+                              colorScheme={getStatusColor(payment.payment_status)} 
+                              variant="subtle"
+                              size="sm"
+                            >
+                              {payment.payment_status}
+                            </Badge>
+                          </VStack>
+                        </HStack>
+                        
+                        <Text fontSize="xs" color="gray.600" textAlign="right">
+                          {formatDate(payment.paid_at)}
+                        </Text>
+                      </VStack>
+                    </CardBody>
+                  </Card>
+                ))}
+              </VStack>
             </CardBody>
           </Card>
         </SimpleGrid>

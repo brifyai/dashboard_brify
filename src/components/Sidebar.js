@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Box, VStack, Text, Icon, Link, useColorModeValue, Image } from '@chakra-ui/react';
+import { Box, VStack, Text, Icon, Link, useColorModeValue, Image, useBreakpointValue, Button, Flex } from '@chakra-ui/react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { MdHome, MdBarChart, MdPeople, MdPayment, MdDiamond, MdAssignment } from 'react-icons/md';
+import { MdHome, MdBarChart, MdPeople, MdPayment, MdDiamond, MdAssignment, MdMenu, MdClose } from 'react-icons/md';
 
 function Sidebar() {
   const bg = useColorModeValue('white', 'gray.800');
@@ -11,6 +11,26 @@ function Sidebar() {
   const navigate = useNavigate();
   const location = useLocation();
   const [activeView, setActiveView] = useState('dashboard');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // Escuchar evento para abrir menú móvil desde el Header
+  useEffect(() => {
+    const handleOpenMobileMenu = () => {
+      setIsMobileMenuOpen(true);
+    };
+
+    window.addEventListener('openMobileMenu', handleOpenMobileMenu);
+    return () => {
+      window.removeEventListener('openMobileMenu', handleOpenMobileMenu);
+    };
+  }, []);
+  
+  // Responsive values
+  const sidebarWidth = useBreakpointValue({ base: 'full', md: '280px' });
+  const sidebarPosition = useBreakpointValue({ base: 'absolute', md: 'fixed' });
+  const sidebarZIndex = useBreakpointValue({ base: '9999', md: 'auto' });
+  const padding = useBreakpointValue({ base: '3', md: '4' });
+  const imageMaxWidth = useBreakpointValue({ base: '150px', md: '200px' });
 
   // Navegación interna del CRM
   const crmNavItems = [
@@ -45,29 +65,61 @@ function Sidebar() {
 
   const isCRMPath = location.pathname.includes('/admin/crm') || location.pathname.includes('/admin/default') || location.pathname.includes('/admin/profile') || location.pathname.includes('/admin/settings');
 
+  // Responsive value for overlay z-index
+  const overlayZIndex = useBreakpointValue({ base: '9998', md: 'auto' });
+
   return (
-    <Box
-      bg={bg}
-      borderRight="1px solid"
-      borderColor={borderColor}
-      w="280px"
-      h="100vh"
-      p="4"
-      position="fixed"
-      left="0"
-      top="0"
-      overflowY="auto"
-    >
-      <Image 
-        src="https://brifyai.com/images/logobrify24.png" 
-        alt="BrifyAI" 
-        mb="8" 
-        maxW="200px" 
-        h="auto"
-        cursor="pointer"
-        _hover={{ opacity: 0.8 }}
-        onClick={() => navigate('/admin/default')}
-      />
+    <>
+      {/* Overlay para cerrar menú móvil */}
+      {isMobileMenuOpen && (
+        <Box
+          position="fixed"
+          top="0"
+          left="0"
+          right="0"
+          bottom="0"
+          bg="blackAlpha.600"
+          zIndex={overlayZIndex}
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+      
+      <Box
+        bg={bg}
+        borderRight="1px solid"
+        borderColor={borderColor}
+        w={sidebarWidth}
+        h="100vh"
+        p={padding}
+        position={sidebarPosition}
+        left="0"
+        top="0"
+        overflowY="auto"
+        zIndex={sidebarZIndex}
+        display={{ base: isMobileMenuOpen ? 'block' : 'none', md: 'block' }}
+      >
+      <Flex justify="space-between" align="center" mb={{ base: '4', md: '8' }}>
+        <Image 
+          src="https://brifyai.com/images/logobrify24.png" 
+          alt="BrifyAI" 
+          maxW={imageMaxWidth} 
+          h="auto"
+          cursor="pointer"
+          _hover={{ opacity: 0.8 }}
+          onClick={() => {
+            navigate('/admin/default');
+            setIsMobileMenuOpen(false);
+          }}
+        />
+        <Button
+          display={{ base: 'flex', md: 'none' }}
+          variant="ghost"
+          size="sm"
+          onClick={() => setIsMobileMenuOpen(false)}
+        >
+          <Icon as={MdClose} />
+        </Button>
+      </Flex>
       
       <VStack align="stretch" spacing="2">
         {/* Navegación CRM */}
@@ -79,7 +131,10 @@ function Sidebar() {
             {crmNavItems.map((item) => (
               <Link
                 key={item.name}
-                onClick={() => handleCRMNavigation(item.view)}
+                onClick={() => {
+                  handleCRMNavigation(item.view);
+                  setIsMobileMenuOpen(false);
+                }}
                 p="3"
                 borderRadius="md"
                 cursor="pointer"
@@ -98,6 +153,7 @@ function Sidebar() {
         )}
       </VStack>
     </Box>
+    </>
   );
 }
 

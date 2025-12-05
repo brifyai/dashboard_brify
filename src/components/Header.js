@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Flex, Text, useColorModeValue, Avatar, HStack, Menu, MenuButton, MenuList, MenuItem, Icon, useToast } from '@chakra-ui/react';
-import { MdLogout, MdPerson, MdSettings } from 'react-icons/md';
+import { Box, Flex, Text, useColorModeValue, Avatar, HStack, Menu, MenuButton, MenuList, MenuItem, Icon, useToast, useBreakpointValue, Button } from '@chakra-ui/react';
+import { MdLogout, MdPerson, MdSettings, MdMenu } from 'react-icons/md';
 import { supabase } from '../config/supabase';
 import { useQueryClient } from '@tanstack/react-query';
 
@@ -15,6 +15,13 @@ function Header() {
   const toast = useToast();
   const queryClient = useQueryClient();
   const [displayText, setDisplayText] = useState('Panel de Control');
+  
+  // Responsive values
+  const paddingX = useBreakpointValue({ base: '4', md: '6' });
+  const paddingY = useBreakpointValue({ base: '3', md: '4' });
+  const fontSize = useBreakpointValue({ base: 'md', md: 'lg' });
+  const avatarSize = useBreakpointValue({ base: 'xs', md: 'sm' });
+  const spacing = useBreakpointValue({ base: '2', md: '4' });
 
   // Obtener nombre del usuario desde la tabla users
   useEffect(() => {
@@ -182,52 +189,73 @@ function Header() {
   const handleSettings = () => {
     navigate('/admin/settings');
   };
+
+  // Función para abrir el menú móvil (se comunicará con el Sidebar)
+  const openMobileMenu = () => {
+    // Disparar un evento personalizado para que el Sidebar escuche
+    window.dispatchEvent(new CustomEvent('openMobileMenu'));
+  };
   
   return (
     <Box
       bg={bg}
       borderBottom="1px solid"
       borderColor={borderColor}
-      px="6"
-      py="4"
+      px={paddingX}
+      py={paddingY}
       position="sticky"
       top="0"
       zIndex="10"
     >
       <Flex justify="space-between" align="center">
-        <Box 
-          pt="8px"
-          style={{
-            transform: 'translateY(5px)',
-            marginTop: '5px',
-            paddingTop: '5px'
-          }}
-        >
-          <Text 
-            fontSize="lg" 
-            fontWeight="bold" 
-            color="blue.600"
+        <Box display="flex" alignItems="center" gap="3">
+          {/* Botón hamburguesa para móvil */}
+          <Button
+            display={{ base: 'flex', md: 'none' }}
+            variant="ghost"
+            size="sm"
+            onClick={openMobileMenu}
+            p="2"
+          >
+            <Icon as={MdMenu} boxSize="6" />
+          </Button>
+          
+          <Box 
+            pt={{ base: "4px", md: "8px" }}
             style={{
-              marginTop: '5px',
-              paddingTop: '5px',
-              marginLeft: '3px',
               transform: 'translateY(5px)',
-              display: 'block',
-              lineHeight: '1.2'
+              marginTop: '5px',
+              paddingTop: '5px'
             }}
           >
-            {displayText === 'Panel de Control' ? displayText : `Bienvenido ${displayText}`}
-          </Text>
+            <Text 
+              fontSize={fontSize} 
+              fontWeight="bold" 
+              color="blue.600"
+              style={{
+                marginTop: '5px',
+                paddingTop: '5px',
+                marginLeft: '3px',
+                transform: 'translateY(5px)',
+                display: 'block',
+                lineHeight: '1.2'
+              }}
+            >
+              {displayText === 'Panel de Control' ? displayText : `Bienvenido ${displayText}`}
+            </Text>
+          </Box>
         </Box>
         
-        <HStack spacing="4">
+        <HStack spacing={spacing}>
           <Menu>
             <MenuButton>
               <Avatar
-                size="sm"
+                size={avatarSize}
                 name={user?.user_metadata?.full_name || 'User'}
                 cursor="pointer"
                 _hover={{ opacity: 0.8 }}
+                bg="brand.500"
+                color="white"
               />
             </MenuButton>
             <MenuList>

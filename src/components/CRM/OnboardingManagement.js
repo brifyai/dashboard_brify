@@ -52,6 +52,7 @@ import {
   Divider,
   FormControl,
   FormLabel,
+  useBreakpointValue,
 } from '@chakra-ui/react';
 import { 
   MdSearch, 
@@ -89,6 +90,15 @@ function OnboardingManagement() {
     hasCompletedSteps: 'all'
   });
   const toast = useToast();
+
+  // Responsive values
+  const isMobile = useBreakpointValue({ base: true, md: false });
+  const containerPadding = useBreakpointValue({ base: 4, md: 6 });
+  const headerSize = useBreakpointValue({ base: "md", lg: "lg" });
+  const statsColumns = useBreakpointValue({ base: 1, md: 2, lg: 4 });
+  const cardPadding = useBreakpointValue({ base: 4, md: 6 });
+  const buttonSize = useBreakpointValue({ base: "sm", md: "md" });
+  const inputSize = useBreakpointValue({ base: "sm", md: "md" });
 
   useEffect(() => {
     fetchUsers();
@@ -334,11 +344,11 @@ function OnboardingManagement() {
   };
 
   return (
-    <Box p={6} bg="gray.50" minH="100vh">
+    <Box p={containerPadding} bg="gray.50" minH="100vh">
       <VStack spacing={6} align="stretch">
         {/* Header */}
         <Box>
-          <Heading size="lg" color="purple.600" mb={2}>
+          <Heading size={headerSize} color="purple.600" mb={2}>
             Gestión de Onboarding
           </Heading>
           <Text color="gray.600">
@@ -347,10 +357,10 @@ function OnboardingManagement() {
         </Box>
 
         {/* Estadísticas de Onboarding */}
-        <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} spacing={4}>
+        <SimpleGrid columns={statsColumns} spacing={4}>
           <Card>
             <CardBody>
-              <Stat>
+              <Stat textAlign="center">
                 <StatLabel>Total Usuarios</StatLabel>
                 <StatNumber color="blue.600">{stats.total}</StatNumber>
                 <StatHelpText>En proceso de onboarding</StatHelpText>
@@ -360,7 +370,7 @@ function OnboardingManagement() {
           
           <Card>
             <CardBody>
-              <Stat>
+              <Stat textAlign="center">
                 <StatLabel>Pendientes</StatLabel>
                 <StatNumber color="orange.600">{stats.pending}</StatNumber>
                 <StatHelpText>
@@ -373,7 +383,7 @@ function OnboardingManagement() {
           
           <Card>
             <CardBody>
-              <Stat>
+              <Stat textAlign="center">
                 <StatLabel>Completados</StatLabel>
                 <StatNumber color="green.600">{stats.completed}</StatNumber>
                 <StatHelpText>
@@ -385,7 +395,7 @@ function OnboardingManagement() {
           
           <Card>
             <CardBody>
-              <Stat>
+              <Stat textAlign="center">
                 <StatLabel>Progreso Promedio</StatLabel>
                 <StatNumber color="purple.600">{stats.averageProgress.toFixed(1)}%</StatNumber>
                 <StatHelpText>
@@ -413,46 +423,52 @@ function OnboardingManagement() {
         {/* Filtros y Búsqueda */}
         <Card>
           <CardBody>
-            <HStack spacing={4} wrap="wrap">
-              <Box flex={1} minW="300px">
+            <VStack spacing={4} align="stretch">
+              <Box flex={1}>
                 <Input
+                  size={inputSize}
                   placeholder="Buscar por email o nombre..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </Box>
               
-              <Select 
-                value={statusFilter} 
-                onChange={(e) => setStatusFilter(e.target.value)}
-                w="200px"
-              >
-                <option value="all">Todos los estados</option>
-                <option value="pending">Pendientes</option>
-                <option value="terminado">Terminados</option>
-                <option value="completed">Completados</option>
-              </Select>
-              
-              <Button 
-                leftIcon={<MdFilterList />} 
-                variant="outline"
-                onClick={onFilterOpen}
-              >
-                Más Filtros
-              </Button>
-            </HStack>
+              <HStack spacing={4} wrap="wrap">
+                <Select 
+                  value={statusFilter} 
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  flex={1}
+                  minW="150px"
+                  size={inputSize}
+                >
+                  <option value="all">Todos los estados</option>
+                  <option value="pending">Pendientes</option>
+                  <option value="terminado">Terminados</option>
+                  <option value="completed">Completados</option>
+                </Select>
+                
+                <Button 
+                  leftIcon={<MdFilterList />} 
+                  variant="outline"
+                  size={buttonSize}
+                  onClick={onFilterOpen}
+                >
+                  Más Filtros
+                </Button>
+              </HStack>
+            </VStack>
           </CardBody>
         </Card>
 
         {/* Tabla de Onboarding */}
         <Card>
           <CardHeader>
-            <HStack justify="space-between">
-              <Heading size="md">Progreso de Onboarding ({filteredUsers.length})</Heading>
+            <HStack justify="space-between" wrap="wrap">
+              <Heading size={headerSize}>Progreso de Onboarding ({filteredUsers.length})</Heading>
               <Button 
                 leftIcon={<MdAssignment />} 
                 colorScheme="purple" 
-                size="sm"
+                size={buttonSize}
                 onClick={handleGenerateReport}
               >
                 Generar Reporte
@@ -461,26 +477,17 @@ function OnboardingManagement() {
           </CardHeader>
           
           <CardBody>
-            <TableContainer>
-              <Table variant="simple" size="sm">
-                <Thead>
-                  <Tr>
-                    <Th>Usuario</Th>
-                    <Th>Estado</Th>
-                    <Th>Progreso</Th>
-                    <Th>Pasos Completados</Th>
-                    <Th>Fecha Registro</Th>
-                    <Th>Última Actividad</Th>
-                    <Th>Acciones</Th>
-                  </Tr>
-                </Thead>
-                <Tbody>
-                  {filteredUsers.map((user) => (
-                    <Tr key={user.id}>
-                      <Td>
+            {isMobile ? (
+              /* Vista de Cards para Móvil */
+              <VStack spacing={4}>
+                {filteredUsers.slice(0, 20).map((user) => (
+                  <Card key={user.id} w="full" border="1px" borderColor="gray.200">
+                    <CardBody p={cardPadding}>
+                      <VStack spacing={3} align="stretch">
+                        {/* Usuario */}
                         <HStack spacing={3}>
                           <Avatar size="sm" name={user.name} />
-                          <VStack align="start" spacing={0}>
+                          <VStack align="start" spacing={0} flex={1}>
                             <Text fontWeight="medium" fontSize="sm">
                               {user.name || 'Sin nombre'}
                             </Text>
@@ -489,85 +496,172 @@ function OnboardingManagement() {
                             </Text>
                           </VStack>
                         </HStack>
-                      </Td>
-                      
-                      <Td>
-                        <Badge 
-                          colorScheme={getStatusColor(user.onboarding_status)} 
-                          variant="subtle"
-                        >
-                          {getStatusIcon(user.onboarding_status)}
-                          <Text ml={1}>{user.onboarding_status}</Text>
-                        </Badge>
-                      </Td>
-                      
-                      <Td>
-                        <VStack align="start" spacing={1}>
-                          <Text fontSize="sm" fontWeight="bold">
-                            {user.completion_percentage.toFixed(1)}%
-                          </Text>
-                          <Progress 
-                            value={user.completion_percentage} 
-                            size="sm" 
-                            colorScheme={getProgressColor(user.completion_percentage)} 
-                            w="80px"
-                            borderRadius="full"
-                          />
-                        </VStack>
-                      </Td>
-                      
-                      <Td>
-                        <VStack align="start" spacing={1}>
-                          {user.onboarding_progress && Object.entries(user.onboarding_progress).map(([step, completed]) => (
-                            <HStack key={step} spacing={2}>
-                              {completed ? (
-                                <MdCheckCircle color="green" size={16} />
-                              ) : (
-                                <MdPending color="orange" size={16} />
-                              )}
-                              <Text fontSize="xs" color={completed ? 'green.600' : 'orange.600'}>
-                                {step}
-                              </Text>
-                            </HStack>
-                          ))}
-                        </VStack>
-                      </Td>
-                      
-                      <Td>
-                        <Text fontSize="sm">{formatDate(user.created_at)}</Text>
-                      </Td>
-                      
-                      <Td>
-                        <Tooltip label="Última interacción registrada">
-                          <Text fontSize="sm" color="gray.600">
-                            {user.ultima_interaccion ? formatDate(user.ultima_interaccion) : 'N/A'}
-                          </Text>
-                        </Tooltip>
-                      </Td>
-                      
-                      <Td>
-                        <Menu>
-                          <MenuButton
-                            as={IconButton}
-                            icon={<MdMoreVert />}
-                            variant="ghost"
+                        
+                        {/* Estado y Progreso */}
+                        <HStack justify="space-between">
+                          <Badge 
+                            colorScheme={getStatusColor(user.onboarding_status)} 
+                            variant="subtle"
                             size="sm"
-                          />
-                          <MenuList>
-                            <MenuItem 
-                              icon={<MdVisibility />}
-                              onClick={() => openOnboardingDetails(user)}
-                            >
-                              Ver Detalles
-                            </MenuItem>
-                          </MenuList>
-                        </Menu>
-                      </Td>
+                          >
+                            {getStatusIcon(user.onboarding_status)}
+                            <Text ml={1}>{user.onboarding_status}</Text>
+                          </Badge>
+                          
+                          <VStack align="end" spacing={1}>
+                            <Text fontSize="sm" fontWeight="bold">
+                              {user.completion_percentage.toFixed(1)}%
+                            </Text>
+                            <Progress 
+                              value={user.completion_percentage} 
+                              size="sm" 
+                              colorScheme={getProgressColor(user.completion_percentage)} 
+                              w="80px"
+                              borderRadius="full"
+                            />
+                          </VStack>
+                        </HStack>
+                        
+                        {/* Fechas */}
+                        <VStack spacing={1} align="stretch">
+                          <Text fontSize="xs" color="gray.600">
+                            <strong>Registro:</strong> {formatDate(user.created_at)}
+                          </Text>
+                          <Text fontSize="xs" color="gray.600">
+                            <strong>Última Actividad:</strong> {user.ultima_interaccion ? formatDate(user.ultima_interaccion) : 'N/A'}
+                          </Text>
+                        </VStack>
+                        
+                        {/* Acciones */}
+                        <Button 
+                          leftIcon={<MdVisibility />}
+                          size={buttonSize}
+                          variant="outline"
+                          onClick={() => openOnboardingDetails(user)}
+                        >
+                          Ver Detalles
+                        </Button>
+                      </VStack>
+                    </CardBody>
+                  </Card>
+                ))}
+                
+                {filteredUsers.length > 20 && (
+                  <Text fontSize="sm" color="gray.500" textAlign="center">
+                    Mostrando los primeros 20 de {filteredUsers.length} usuarios
+                  </Text>
+                )}
+              </VStack>
+            ) : (
+              /* Vista de Tabla para Desktop */
+              <TableContainer>
+                <Table variant="simple" size="sm">
+                  <Thead>
+                    <Tr>
+                      <Th>Usuario</Th>
+                      <Th>Estado</Th>
+                      <Th>Progreso</Th>
+                      <Th>Pasos Completados</Th>
+                      <Th>Fecha Registro</Th>
+                      <Th>Última Actividad</Th>
+                      <Th>Acciones</Th>
                     </Tr>
-                  ))}
-                </Tbody>
-              </Table>
-            </TableContainer>
+                  </Thead>
+                  <Tbody>
+                    {filteredUsers.map((user) => (
+                      <Tr key={user.id}>
+                        <Td>
+                          <HStack spacing={3}>
+                            <Avatar size="sm" name={user.name} />
+                            <VStack align="start" spacing={0}>
+                              <Text fontWeight="medium" fontSize="sm">
+                                {user.name || 'Sin nombre'}
+                              </Text>
+                              <Text fontSize="xs" color="gray.500">
+                                {user.email}
+                              </Text>
+                            </VStack>
+                          </HStack>
+                        </Td>
+                        
+                        <Td>
+                          <Badge 
+                            colorScheme={getStatusColor(user.onboarding_status)} 
+                            variant="subtle"
+                          >
+                            {getStatusIcon(user.onboarding_status)}
+                            <Text ml={1}>{user.onboarding_status}</Text>
+                          </Badge>
+                        </Td>
+                        
+                        <Td>
+                          <VStack align="start" spacing={1}>
+                            <Text fontSize="sm" fontWeight="bold">
+                              {user.completion_percentage.toFixed(1)}%
+                            </Text>
+                            <Progress 
+                              value={user.completion_percentage} 
+                              size="sm" 
+                              colorScheme={getProgressColor(user.completion_percentage)} 
+                              w="80px"
+                              borderRadius="full"
+                            />
+                          </VStack>
+                        </Td>
+                        
+                        <Td>
+                          <VStack align="start" spacing={1}>
+                            {user.onboarding_progress && Object.entries(user.onboarding_progress).map(([step, completed]) => (
+                              <HStack key={step} spacing={2}>
+                                {completed ? (
+                                  <MdCheckCircle color="green" size={16} />
+                                ) : (
+                                  <MdPending color="orange" size={16} />
+                                )}
+                                <Text fontSize="xs" color={completed ? 'green.600' : 'orange.600'}>
+                                  {step}
+                                </Text>
+                              </HStack>
+                            ))}
+                          </VStack>
+                        </Td>
+                        
+                        <Td>
+                          <Text fontSize="sm">{formatDate(user.created_at)}</Text>
+                        </Td>
+                        
+                        <Td>
+                          <Tooltip label="Última interacción registrada">
+                            <Text fontSize="sm" color="gray.600">
+                              {user.ultima_interaccion ? formatDate(user.ultima_interaccion) : 'N/A'}
+                            </Text>
+                          </Tooltip>
+                        </Td>
+                        
+                        <Td>
+                          <Menu>
+                            <MenuButton
+                              as={IconButton}
+                              icon={<MdMoreVert />}
+                              variant="ghost"
+                              size="sm"
+                            />
+                            <MenuList>
+                              <MenuItem 
+                                icon={<MdVisibility />}
+                                onClick={() => openOnboardingDetails(user)}
+                              >
+                                Ver Detalles
+                              </MenuItem>
+                            </MenuList>
+                          </Menu>
+                        </Td>
+                      </Tr>
+                    ))}
+                  </Tbody>
+                </Table>
+              </TableContainer>
+            )}
           </CardBody>
         </Card>
       </VStack>

@@ -13,6 +13,8 @@ import {
   Button,
   Divider,
   Card,
+  CardBody,
+  CardHeader,
   useColorModeValue,
   useToast,
   Tabs,
@@ -39,6 +41,7 @@ import {
   Spinner,
   Alert,
   AlertIcon,
+  useBreakpointValue,
 } from '@chakra-ui/react';
 import { MdSave, MdRefresh, MdSecurity, MdNotifications, MdPalette, MdStorage, MdPeople, MdEdit, MdDelete, MdAdd } from 'react-icons/md';
 import InputField from '../../components/InputField';
@@ -92,6 +95,15 @@ function Settings() {
   const [editingUser, setEditingUser] = useState(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [formLoading, setFormLoading] = useState(false);
+
+  // Responsive values
+  const isMobile = useBreakpointValue({ base: true, md: false });
+  const containerPadding = useBreakpointValue({ base: 4, md: 6 });
+  const headerSize = useBreakpointValue({ base: "md", lg: "lg" });
+  const cardPadding = useBreakpointValue({ base: 4, md: 6 });
+  const spacing = useBreakpointValue({ base: 4, md: 6 });
+  const buttonSize = useBreakpointValue({ base: "sm", md: "sm" });
+  const modalSize = useBreakpointValue({ base: "full", md: "lg" });
 
   const handleSave = async (section) => {
     setLoading(true);
@@ -284,11 +296,11 @@ function Settings() {
   }, []);
 
   return (
-    <Box bg={bg} minH="100vh" pl="21px">
-      <VStack spacing={6} align="stretch">
+    <Box bg={bg} minH="100vh" p={containerPadding}>
+      <VStack spacing={spacing} align="stretch">
         {/* Header */}
-        <Box ml="6px">
-          <Heading mb={4} size="lg" color="brand.500">
+        <Box>
+          <Heading mb={4} size={headerSize} color="brand.500">
             {t('settings.title') || 'Configuración'}
           </Heading>
           <Text color="gray.600">
@@ -298,9 +310,9 @@ function Settings() {
 
         {/* User Management Content */}
         <Card>
-          <VStack spacing={6} align="start">
-            <HStack justify="space-between" w="full">
-              <Heading size="md">{t('settings.userManagement') || 'Gestión de Usuarios'}</Heading>
+          <VStack spacing={spacing} align="stretch">
+            <HStack justify="space-between" w="full" wrap="wrap">
+              <Heading size={headerSize}>{t('settings.userManagement') || 'Gestión de Usuarios'}</Heading>
               <Button
                 colorScheme="brand"
                 leftIcon={<MdAdd />}
@@ -315,7 +327,7 @@ function Settings() {
                   });
                   onOpen();
                 }}
-                size="sm"
+                size={buttonSize}
               >
                 {t('settings.addUser') || 'Agregar Usuario'}
               </Button>
@@ -327,91 +339,187 @@ function Settings() {
                 <Text>{t('settings.loadingUsers') || 'Cargando usuarios...'}</Text>
               </HStack>
             ) : (
-              <Box w="full" overflowX="auto">
-                <Table variant="simple" size="sm">
-                  <Thead>
-                    <Tr>
-                      <Th>{t('settings.name') || 'Nombre'}</Th>
-                      <Th>{t('settings.email') || 'Email'}</Th>
-                      <Th>{t('settings.role') || 'Rol'}</Th>
-                      <Th>{t('settings.status') || 'Estado'}</Th>
-                      <Th>{t('settings.createdAt') || 'Fecha Creación'}</Th>
-                      <Th>{t('settings.actions') || 'Acciones'}</Th>
-                    </Tr>
-                  </Thead>
-                  <Tbody>
-                    {users.map((user) => (
-                      <Tr key={user.id}>
-                        <Td>
-                          <Text fontWeight="medium">{user.name || 'Sin nombre'}</Text>
-                        </Td>
-                        <Td>
-                          <Text fontSize="sm">{user.email}</Text>
-                        </Td>
-                        <Td>
-                          <Badge
-                            colorScheme={user.role === 'admin' ? 'red' : user.role === 'moderator' ? 'yellow' : 'green'}
-                            variant="subtle"
-                          >
-                            {user.role === 'admin' ? 'Admin' : user.role === 'moderator' ? 'Moderador' : 'Usuario'}
-                          </Badge>
-                        </Td>
-                        <Td>
-                          <Badge
-                            colorScheme={user.status === 'active' ? 'green' : 'red'}
-                            variant="subtle"
-                          >
-                            {user.status === 'active' ? 'Activo' : 'Inactivo'}
-                          </Badge>
-                        </Td>
-                        <Td>
-                          <Text fontSize="sm">
-                            {new Date(user.created_at).toLocaleDateString('es-ES')}
-                          </Text>
-                        </Td>
-                        <Td>
-                          <HStack spacing={2}>
-                            <IconButton
-                              size="sm"
-                              variant="outline"
-                              colorScheme="blue"
-                              icon={<MdEdit />}
-                              onClick={() => {
-                                setEditingUser(user);
-                                setNewUser({
-                                  name: user.name || '',
-                                  email: user.email,
-                                  password: '',
-                                  role: user.role || 'user',
-                                  status: user.status || 'active'
-                                });
-                                onOpen();
-                              }}
-                              aria-label={t('settings.editUser') || 'Editar usuario'}
-                            />
-                            <IconButton
-                              size="sm"
-                              variant="outline"
-                              colorScheme="red"
-                              icon={<MdDelete />}
-                              onClick={() => {
-                                if (window.confirm(t('settings.confirmDelete') || '¿Estás seguro de que deseas eliminar este usuario?')) {
-                                  deleteUser(user.id);
-                                }
-                              }}
-                              aria-label={t('settings.deleteUser') || 'Eliminar usuario'}
-                            />
-                          </HStack>
-                        </Td>
-                      </Tr>
+              <Box w="full">
+                {isMobile ? (
+                  /* Vista de Cards para Móvil */
+                  <VStack spacing={4}>
+                    {users.slice(0, 20).map((user) => (
+                      <Card key={user.id} w="full" border="1px" borderColor="gray.200">
+                        <CardBody p={cardPadding}>
+                          <VStack spacing={3} align="stretch">
+                            {/* Nombre y Email */}
+                            <VStack align="start" spacing={1}>
+                              <Text fontWeight="medium" fontSize="md">
+                                {user.name || 'Sin nombre'}
+                              </Text>
+                              <Text fontSize="sm" color="gray.600">
+                                {user.email}
+                              </Text>
+                            </VStack>
+
+                            {/* Rol y Estado */}
+                            <HStack justify="space-between">
+                              <Badge
+                                colorScheme={user.role === 'admin' ? 'red' : user.role === 'moderator' ? 'yellow' : 'green'}
+                                variant="subtle"
+                                size="sm"
+                              >
+                                {user.role === 'admin' ? 'Admin' : user.role === 'moderator' ? 'Moderador' : 'Usuario'}
+                              </Badge>
+                              <Badge
+                                colorScheme={user.status === 'active' ? 'green' : 'red'}
+                                variant="subtle"
+                                size="sm"
+                              >
+                                {user.status === 'active' ? 'Activo' : 'Inactivo'}
+                              </Badge>
+                            </HStack>
+
+                            {/* Fecha de creación */}
+                            <Text fontSize="xs" color="gray.500">
+                              <strong>Creado:</strong> {new Date(user.created_at).toLocaleDateString('es-ES')}
+                            </Text>
+
+                            {/* Acciones */}
+                            <HStack spacing={2} justify="end">
+                              <IconButton
+                                size="sm"
+                                variant="outline"
+                                colorScheme="blue"
+                                icon={<MdEdit />}
+                                onClick={() => {
+                                  setEditingUser(user);
+                                  setNewUser({
+                                    name: user.name || '',
+                                    email: user.email,
+                                    password: '',
+                                    role: user.role || 'user',
+                                    status: user.status || 'active'
+                                  });
+                                  onOpen();
+                                }}
+                                aria-label={t('settings.editUser') || 'Editar usuario'}
+                              />
+                              <IconButton
+                                size="sm"
+                                variant="outline"
+                                colorScheme="red"
+                                icon={<MdDelete />}
+                                onClick={() => {
+                                  if (window.confirm(t('settings.confirmDelete') || '¿Estás seguro de que deseas eliminar este usuario?')) {
+                                    deleteUser(user.id);
+                                  }
+                                }}
+                                aria-label={t('settings.deleteUser') || 'Eliminar usuario'}
+                              />
+                            </HStack>
+                          </VStack>
+                        </CardBody>
+                      </Card>
                     ))}
-                  </Tbody>
-                </Table>
-                {users.length === 0 && (
-                  <Alert status="info" mt={4}>
-                    <AlertIcon />
-                    {t('settings.noUsers') || 'No hay usuarios registrados'}
-                  </Alert>
+                    
+                    {users.length === 0 && (
+                      <Alert status="info">
+                        <AlertIcon />
+                        {t('settings.noUsers') || 'No hay usuarios registrados'}
+                      </Alert>
+                    )}
+                    
+                    {users.length > 20 && (
+                      <Text fontSize="sm" color="gray.500" textAlign="center">
+                        Mostrando los primeros 20 de {users.length} usuarios
+                      </Text>
+                    )}
+                  </VStack>
+                ) : (
+                  /* Vista de Tabla para Desktop */
+                  <Box w="full" overflowX="auto">
+                    <Table variant="simple" size="sm">
+                      <Thead>
+                        <Tr>
+                          <Th>{t('settings.name') || 'Nombre'}</Th>
+                          <Th>{t('settings.email') || 'Email'}</Th>
+                          <Th>{t('settings.role') || 'Rol'}</Th>
+                          <Th>{t('settings.status') || 'Estado'}</Th>
+                          <Th>{t('settings.createdAt') || 'Fecha Creación'}</Th>
+                          <Th>{t('settings.actions') || 'Acciones'}</Th>
+                        </Tr>
+                      </Thead>
+                      <Tbody>
+                        {users.map((user) => (
+                          <Tr key={user.id}>
+                            <Td>
+                              <Text fontWeight="medium">{user.name || 'Sin nombre'}</Text>
+                            </Td>
+                            <Td>
+                              <Text fontSize="sm">{user.email}</Text>
+                            </Td>
+                            <Td>
+                              <Badge
+                                colorScheme={user.role === 'admin' ? 'red' : user.role === 'moderator' ? 'yellow' : 'green'}
+                                variant="subtle"
+                              >
+                                {user.role === 'admin' ? 'Admin' : user.role === 'moderator' ? 'Moderador' : 'Usuario'}
+                              </Badge>
+                            </Td>
+                            <Td>
+                              <Badge
+                                colorScheme={user.status === 'active' ? 'green' : 'red'}
+                                variant="subtle"
+                              >
+                                {user.status === 'active' ? 'Activo' : 'Inactivo'}
+                              </Badge>
+                            </Td>
+                            <Td>
+                              <Text fontSize="sm">
+                                {new Date(user.created_at).toLocaleDateString('es-ES')}
+                              </Text>
+                            </Td>
+                            <Td>
+                              <HStack spacing={2}>
+                                <IconButton
+                                  size="sm"
+                                  variant="outline"
+                                  colorScheme="blue"
+                                  icon={<MdEdit />}
+                                  onClick={() => {
+                                    setEditingUser(user);
+                                    setNewUser({
+                                      name: user.name || '',
+                                      email: user.email,
+                                      password: '',
+                                      role: user.role || 'user',
+                                      status: user.status || 'active'
+                                    });
+                                    onOpen();
+                                  }}
+                                  aria-label={t('settings.editUser') || 'Editar usuario'}
+                                />
+                                <IconButton
+                                  size="sm"
+                                  variant="outline"
+                                  colorScheme="red"
+                                  icon={<MdDelete />}
+                                  onClick={() => {
+                                    if (window.confirm(t('settings.confirmDelete') || '¿Estás seguro de que deseas eliminar este usuario?')) {
+                                      deleteUser(user.id);
+                                    }
+                                  }}
+                                  aria-label={t('settings.deleteUser') || 'Eliminar usuario'}
+                                />
+                              </HStack>
+                            </Td>
+                          </Tr>
+                        ))}
+                      </Tbody>
+                    </Table>
+                    {users.length === 0 && (
+                      <Alert status="info" mt={4}>
+                        <AlertIcon />
+                        {t('settings.noUsers') || 'No hay usuarios registrados'}
+                      </Alert>
+                    )}
+                  </Box>
                 )}
               </Box>
             )}

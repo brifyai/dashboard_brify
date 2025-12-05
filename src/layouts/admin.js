@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
-import { Box, Flex, Center, Spinner, VStack, Text } from '@chakra-ui/react';
+import { Box, Flex, Center, Spinner, VStack, Text, useBreakpointValue } from '@chakra-ui/react';
 import routes from '../routes';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
@@ -10,6 +10,9 @@ function AdminLayout() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const adminRoutes = routes.filter(route => route.layout === '/admin');
+  
+  // Responsive margin-left for main content
+  const mainContentMargin = useBreakpointValue({ base: '0', md: '250px' });
 
   // Redirigir si no está autenticado
   useEffect(() => {
@@ -39,7 +42,7 @@ function AdminLayout() {
   return (
     <Flex minH="100vh" bg="gray.50">
       <Sidebar />
-      <Box ml="250px" flex="1">
+      <Box ml={mainContentMargin} flex="1">
         <Header />
         <Box p={6}>
           <Routes>

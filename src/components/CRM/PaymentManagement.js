@@ -40,6 +40,7 @@ import {
   StatNumber,
   StatHelpText,
   StatArrow,
+  Flex,
 } from '@chakra-ui/react';
 import { 
   MdSearch, 
@@ -403,26 +404,26 @@ function PaymentManagement() {
   };
 
   return (
-    <Box p={6} bg="gray.50" minH="100vh">
-      <VStack spacing={6} align="stretch">
+    <Box p={{ base: 3, md: 6 }} bg="gray.50" minH="100vh">
+      <VStack spacing={{ base: 4, md: 6 }} align="stretch">
         {/* Header */}
         <Box>
-          <Heading size="lg" color="green.600" mb={2}>
+          <Heading size={{ base: 'md', md: 'lg' }} color="green.600" mb={2}>
             Gestión de Pagos
           </Heading>
-          <Text color="gray.600">
+          <Text color="gray.600" fontSize={{ base: 'sm', md: 'md' }}>
             Administra todos los pagos, transacciones y estados de facturación
           </Text>
         </Box>
 
         {/* Estadísticas de Pagos */}
-        <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} spacing={4}>
+        <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} spacing={3}>
           <Card>
             <CardBody>
-              <Stat>
+              <Stat textAlign="center">
                 <StatLabel>Total Pagos</StatLabel>
                 <StatNumber color="blue.600">{stats.total}</StatNumber>
-                <StatHelpText>
+                <StatHelpText justify="center">
                   <StatArrow type="increase" />
                   {stats.thisMonth} este mes
                 </StatHelpText>
@@ -432,12 +433,12 @@ function PaymentManagement() {
           
           <Card>
             <CardBody>
-              <Stat>
+              <Stat textAlign="center">
                 <StatLabel>Monto Total</StatLabel>
                 <StatNumber color="green.600">
                   {formatCurrency(stats.totalAmount)}
                 </StatNumber>
-                <StatHelpText>
+                <StatHelpText justify="center">
                   <StatArrow type="increase" />
                   {formatCurrency(thisMonthAmount)} este mes
                 </StatHelpText>
@@ -447,10 +448,10 @@ function PaymentManagement() {
           
           <Card>
             <CardBody>
-              <Stat>
+              <Stat textAlign="center">
                 <StatLabel>Pagos Exitosos</StatLabel>
                 <StatNumber color="green.600">{stats.paid}</StatNumber>
-                <StatHelpText>
+                <StatHelpText justify="center">
                   {((stats.paid / stats.total) * 100).toFixed(1)}% del total
                 </StatHelpText>
               </Stat>
@@ -459,10 +460,10 @@ function PaymentManagement() {
           
           <Card>
             <CardBody>
-              <Stat>
+              <Stat textAlign="center">
                 <StatLabel>Pagos Pendientes</StatLabel>
                 <StatNumber color="orange.600">{stats.pending}</StatNumber>
-                <StatHelpText>
+                <StatHelpText justify="center">
                   Requieren atención
                 </StatHelpText>
               </Stat>
@@ -473,156 +474,362 @@ function PaymentManagement() {
         {/* Filtros y Búsqueda */}
         <Card>
           <CardBody>
-            <HStack spacing={4} wrap="wrap">
-              <Box flex={1} minW="300px">
+            <VStack spacing={3} align="stretch">
+              <Box flex={1} minW={{ base: '100%', md: '300px' }}>
                 <Input
                   placeholder="Buscar por email o referencia..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
+                  size={{ base: 'sm', md: 'md' }}
                 />
               </Box>
               
-              <Select 
-                value={statusFilter} 
-                onChange={(e) => setStatusFilter(e.target.value)}
-                w="200px"
-              >
-                <option value="all">Todos los estados</option>
-                <option value="paid">Pagados</option>
-                <option value="pending">Pendientes</option>
-                <option value="failed">Fallidos</option>
-                <option value="cancelled">Cancelados</option>
-              </Select>
-              
-              <Select 
-                value={providerFilter} 
-                onChange={(e) => setProviderFilter(e.target.value)}
-                w="200px"
-              >
-                <option value="all">Todos los proveedores</option>
-                <option value="mercadopago_test">MercadoPago Test</option>
-                <option value="mercadopago">MercadoPago</option>
-                <option value="stripe">Stripe</option>
-                <option value="paypal">PayPal</option>
-              </Select>
-              
-              <Button leftIcon={<MdFilterList />} variant="outline" onClick={onFiltersOpen}>
-                Más Filtros
-              </Button>
-            </HStack>
+              <HStack spacing={2} wrap="wrap">
+                <Select 
+                  value={statusFilter} 
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  w={{ base: '48%', md: '200px' }}
+                  size={{ base: 'sm', md: 'md' }}
+                >
+                  <option value="all">Todos los estados</option>
+                  <option value="paid">Pagados</option>
+                  <option value="pending">Pendientes</option>
+                  <option value="failed">Fallidos</option>
+                  <option value="cancelled">Cancelados</option>
+                </Select>
+                
+                <Select 
+                  value={providerFilter} 
+                  onChange={(e) => setProviderFilter(e.target.value)}
+                  w={{ base: '48%', md: '200px' }}
+                  size={{ base: 'sm', md: 'md' }}
+                >
+                  <option value="all">Todos los proveedores</option>
+                  <option value="mercadopago_test">MercadoPago Test</option>
+                  <option value="mercadopago">MercadoPago</option>
+                  <option value="stripe">Stripe</option>
+                  <option value="paypal">PayPal</option>
+                </Select>
+                
+                <Button 
+                  leftIcon={<MdFilterList />} 
+                  variant="outline" 
+                  onClick={onFiltersOpen}
+                  size={{ base: 'sm', md: 'md' }}
+                  flex={{ base: '1', md: 'auto' }}
+                >
+                  Más Filtros
+                </Button>
+              </HStack>
+            </VStack>
           </CardBody>
         </Card>
 
         {/* Tabla de Pagos */}
         <Card>
           <CardHeader>
-            <HStack justify="space-between">
+            <HStack justify="space-between" flexWrap="wrap" gap={2}>
               <Heading size="md">Historial de Pagos ({filteredPayments.length})</Heading>
-              <HStack spacing={2}>
-                <Button leftIcon={<MdReceipt />} variant="outline" size="sm">
-                  Exportar Reporte
-                </Button>
-              </HStack>
+              <Button leftIcon={<MdReceipt />} variant="outline" size="sm" onClick={handleExportPaymentReport}>
+                Exportar Reporte
+              </Button>
             </HStack>
           </CardHeader>
           
           <CardBody>
-            <TableContainer>
-              <Table variant="simple" size="sm">
-                <Thead>
-                  <Tr>
-                    <Th>Usuario</Th>
-                    <Th>Plan</Th>
-                    <Th>Monto</Th>
-                    <Th>Estado</Th>
-                    <Th>Proveedor</Th>
-                    <Th>Referencia</Th>
-                    <Th>Fecha</Th>
-                    <Th>Acciones</Th>
-                  </Tr>
-                </Thead>
-                <Tbody>
-                  {currentPayments.map((payment) => (
-                    <Tr key={payment.id}>
-                      <Td>
-                        <VStack align="start" spacing={1}>
-                          <Text fontWeight="medium" fontSize="sm">
+            {/* Desktop: Tabla tradicional */}
+            <Box display={{ base: 'none', lg: 'block' }}>
+              <TableContainer>
+                <Table variant="simple" size="sm">
+                  <Thead>
+                    <Tr>
+                      <Th>Usuario</Th>
+                      <Th>Plan</Th>
+                      <Th>Monto</Th>
+                      <Th>Estado</Th>
+                      <Th>Proveedor</Th>
+                      <Th>Referencia</Th>
+                      <Th>Fecha</Th>
+                      <Th>Acciones</Th>
+                    </Tr>
+                  </Thead>
+                  <Tbody>
+                    {currentPayments.map((payment) => (
+                      <Tr key={payment.id}>
+                        <Td>
+                          <VStack align="start" spacing={1}>
+                            <Text fontWeight="medium" fontSize="sm">
+                              {payment.users?.name || 'Usuario sin nombre'}
+                            </Text>
+                            <Text fontSize="xs" color="gray.500">
+                              {payment.users?.email}
+                            </Text>
+                          </VStack>
+                        </Td>
+                        
+                        <Td>
+                          <Text fontSize="sm" fontWeight="medium">
+                            {payment.plans?.name || 'Plan desconocido'}
+                          </Text>
+                          <Text fontSize="xs" color="gray.500">
+                            {formatCurrency(payment.plans?.price || 0)}
+                          </Text>
+                        </Td>
+                        
+                        <Td>
+                          <Text fontSize="sm" fontWeight="bold" color="green.600">
+                            {formatCurrency(payment.amount_usd)}
+                          </Text>
+                        </Td>
+                        
+                        <Td>
+                          <Badge 
+                            colorScheme={getStatusColor(payment.payment_status)} 
+                            variant="subtle"
+                          >
+                            {payment.payment_status}
+                          </Badge>
+                        </Td>
+                        
+                        <Td>
+                          <Badge 
+                            colorScheme={getProviderColor(payment.payment_provider)} 
+                            variant="outline"
+                          >
+                            {payment.payment_provider}
+                          </Badge>
+                        </Td>
+                        
+                        <Td>
+                          <Text fontSize="sm" fontFamily="mono">
+                            {payment.payment_ref || 'N/A'}
+                          </Text>
+                        </Td>
+                        
+                        <Td>
+                          <Text fontSize="sm">
+                            {formatDate(payment.paid_at)}
+                          </Text>
+                        </Td>
+                        
+                        <Td>
+                          <Menu>
+                            <MenuButton
+                              as={IconButton}
+                              icon={<MdMoreVert />}
+                              variant="ghost"
+                              size="sm"
+                            />
+                            <MenuList>
+                              <MenuItem 
+                                icon={<MdVisibility />}
+                                onClick={() => openPaymentDetails(payment)}
+                              >
+                                Ver Detalles
+                              </MenuItem>
+                            </MenuList>
+                          </Menu>
+                        </Td>
+                      </Tr>
+                    ))}
+                  </Tbody>
+                </Table>
+              </TableContainer>
+            </Box>
+
+            {/* Mobile: Cards sin scroll */}
+            <VStack display={{ base: 'flex', lg: 'none' }} spacing={4} align="stretch">
+              {currentPayments.map((payment) => (
+                <Card key={payment.id} variant="outline" size="sm">
+                  <CardBody p={4}>
+                    <VStack spacing={4} align="stretch">
+                      {/* Header del pago */}
+                      <HStack spacing={3} align="start">
+                        <VStack align="start" spacing={1} flex={1}>
+                          <Text fontSize="md" fontWeight="bold" color="green.600">
+                            {formatCurrency(payment.amount_usd)}
+                          </Text>
+                          <Text fontSize="sm" color="gray.600">
                             {payment.users?.name || 'Usuario sin nombre'}
                           </Text>
                           <Text fontSize="xs" color="gray.500">
                             {payment.users?.email}
                           </Text>
                         </VStack>
-                      </Td>
-                      
-                      <Td>
-                        <Text fontSize="sm" fontWeight="medium">
-                          {payment.plans?.name || 'Plan desconocido'}
-                        </Text>
-                        <Text fontSize="xs" color="gray.500">
-                          {formatCurrency(payment.plans?.price || 0)}
-                        </Text>
-                      </Td>
-                      
-                      <Td>
-                        <Text fontSize="sm" fontWeight="bold" color="green.600">
-                          {formatCurrency(payment.amount_usd)}
-                        </Text>
-                      </Td>
-                      
-                      <Td>
                         <Badge 
                           colorScheme={getStatusColor(payment.payment_status)} 
                           variant="subtle"
+                          size="sm"
                         >
                           {payment.payment_status}
                         </Badge>
-                      </Td>
-                      
-                      <Td>
-                        <Badge 
-                          colorScheme={getProviderColor(payment.payment_provider)} 
-                          variant="outline"
-                        >
-                          {payment.payment_provider}
-                        </Badge>
-                      </Td>
-                      
-                      <Td>
-                        <Text fontSize="sm" fontFamily="mono">
-                          {payment.payment_ref || 'N/A'}
-                        </Text>
-                      </Td>
-                      
-                      <Td>
-                        <Text fontSize="sm">
-                          {formatDate(payment.paid_at)}
-                        </Text>
-                      </Td>
-                      
-                      <Td>
-                        <Menu>
-                          <MenuButton
-                            as={IconButton}
-                            icon={<MdMoreVert />}
-                            variant="ghost"
+                      </HStack>
+
+                      {/* Información del plan */}
+                      <SimpleGrid columns={2} spacing={3}>
+                        <VStack align="start" spacing={1}>
+                          <Text fontSize="xs" color="gray.600">Plan</Text>
+                          <Text fontSize="sm" fontWeight="medium">{payment.plans?.name || 'Plan desconocido'}</Text>
+                          <Text fontSize="xs" color="gray.500">{formatCurrency(payment.plans?.price || 0)}</Text>
+                        </VStack>
+                        <VStack align="start" spacing={1}>
+                          <Text fontSize="xs" color="gray.600">Proveedor</Text>
+                          <Badge 
+                            colorScheme={getProviderColor(payment.payment_provider)} 
+                            variant="outline"
                             size="sm"
-                          />
-                          <MenuList>
-                            <MenuItem 
-                              icon={<MdVisibility />}
-                              onClick={() => openPaymentDetails(payment)}
-                            >
-                              Ver Detalles
-                            </MenuItem>
-                          </MenuList>
-                        </Menu>
-                      </Td>
-                    </Tr>
-                  ))}
-                </Tbody>
-              </Table>
-            </TableContainer>
+                          >
+                            {payment.payment_provider}
+                          </Badge>
+                        </VStack>
+                      </SimpleGrid>
+
+                      {/* Referencia y fecha */}
+                      <SimpleGrid columns={2} spacing={3}>
+                        <VStack align="start" spacing={1}>
+                          <Text fontSize="xs" color="gray.600">Referencia</Text>
+                          <Text fontSize="sm" fontFamily="mono">{payment.payment_ref || 'N/A'}</Text>
+                        </VStack>
+                        <VStack align="start" spacing={1}>
+                          <Text fontSize="xs" color="gray.600">Fecha</Text>
+                          <Text fontSize="sm">{formatDate(payment.paid_at)}</Text>
+                        </VStack>
+                      </SimpleGrid>
+
+                      {/* Acciones */}
+                      <HStack justify="flex-end">
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          leftIcon={<MdVisibility />}
+                          onClick={() => openPaymentDetails(payment)}
+                        >
+                          Ver Detalles
+                        </Button>
+                      </HStack>
+                    </VStack>
+                  </CardBody>
+                </Card>
+              ))}
+            </VStack>
+
+            {/* Controles de Paginación - Desktop */}
+            {totalPages > 1 && (
+              <Box display={{ base: 'none', lg: 'block' }} mt={4}>
+                <Flex justify="space-between" align="center">
+                  <Text fontSize="sm" color="gray.600">
+                    Mostrando {startIndex + 1} a {Math.min(endIndex, filteredPayments.length)} de {filteredPayments.length} pagos
+                  </Text>
+                  <HStack spacing={2}>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      isDisabled={currentPage === 1}
+                    >
+                      Anterior
+                    </Button>
+                    
+                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                      let pageNum;
+                      if (totalPages <= 5) {
+                        pageNum = i + 1;
+                      } else if (currentPage <= 3) {
+                        pageNum = i + 1;
+                      } else if (currentPage >= totalPages - 2) {
+                        pageNum = totalPages - 4 + i;
+                      } else {
+                        pageNum = currentPage - 2 + i;
+                      }
+                      
+                      return (
+                        <Button
+                          key={pageNum}
+                          size="sm"
+                          variant={currentPage === pageNum ? "solid" : "outline"}
+                          colorScheme={currentPage === pageNum ? "green" : "gray"}
+                          onClick={() => handlePageChange(pageNum)}
+                        >
+                          {pageNum}
+                        </Button>
+                      );
+                    })}
+                    
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      isDisabled={currentPage === totalPages}
+                    >
+                      Siguiente
+                    </Button>
+                  </HStack>
+                </Flex>
+              </Box>
+            )}
+
+            {/* Controles de Paginación - Mobile */}
+            {totalPages > 1 && (
+              <Box display={{ base: 'block', lg: 'none' }} mt={6}>
+                <VStack spacing={4}>
+                  <Text fontSize="sm" color="gray.600" textAlign="center">
+                    Página {currentPage} de {totalPages}
+                  </Text>
+                  <Text fontSize="xs" color="gray.500" textAlign="center">
+                    Mostrando {Math.min(startIndex + 1, filteredPayments.length)} - {Math.min(endIndex, filteredPayments.length)} de {filteredPayments.length} pagos
+                  </Text>
+                  
+                  <HStack spacing={2} justify="center" flexWrap="wrap">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      isDisabled={currentPage === 1}
+                    >
+                      ← Anterior
+                    </Button>
+                    
+                    {/* Números de página en móvil */}
+                    <HStack spacing={1}>
+                      {Array.from({ length: Math.min(3, totalPages) }, (_, i) => {
+                        let pageNum;
+                        if (totalPages <= 3) {
+                          pageNum = i + 1;
+                        } else if (currentPage === 1) {
+                          pageNum = i + 1;
+                        } else if (currentPage === totalPages) {
+                          pageNum = totalPages - 2 + i;
+                        } else {
+                          pageNum = currentPage - 1 + i;
+                        }
+                        
+                        return (
+                          <Button
+                            key={pageNum}
+                            size="sm"
+                            variant={currentPage === pageNum ? "solid" : "outline"}
+                            colorScheme={currentPage === pageNum ? "green" : "gray"}
+                            onClick={() => handlePageChange(pageNum)}
+                            minW="40px"
+                          >
+                            {pageNum}
+                          </Button>
+                        );
+                      })}
+                    </HStack>
+                    
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      isDisabled={currentPage === totalPages}
+                    >
+                      Siguiente →
+                    </Button>
+                  </HStack>
+                </VStack>
+              </Box>
+            )}
           </CardBody>
         </Card>
       </VStack>

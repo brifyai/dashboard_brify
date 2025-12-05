@@ -445,20 +445,20 @@ function UserManagement() {
   };
 
   return (
-    <Box p={6} bg="gray.50" minH="100vh">
-      <VStack spacing={6} align="stretch">
+    <Box p={{ base: 3, md: 6 }} bg="gray.50" minH="100vh">
+      <VStack spacing={{ base: 4, md: 6 }} align="stretch">
         {/* Header */}
         <Box>
-          <Heading size="lg" color="blue.600" mb={2}>
+          <Heading size={{ base: 'md', md: 'lg' }} color="blue.600" mb={2}>
             Gestión de Usuarios
           </Heading>
-          <Text color="gray.600">
+          <Text color="gray.600" fontSize={{ base: 'sm', md: 'md' }}>
             Administra todos los usuarios, sus planes y estados de onboarding
           </Text>
         </Box>
 
         {/* Estadísticas Rápidas */}
-        <SimpleGrid columns={{ base: 1, md: 3, lg: 5 }} spacing={4}>
+        <SimpleGrid columns={{ base: 2, md: 3, lg: 5 }} spacing={3}>
           <Card>
             <CardBody>
               <VStack spacing={2}>
@@ -518,8 +518,8 @@ function UserManagement() {
         {/* Filtros y Búsqueda */}
         <Card>
           <CardBody>
-            <HStack spacing={4} wrap="wrap">
-              <Box flex={1} minW="300px">
+            <VStack spacing={3} align="stretch">
+              <Box flex={1} minW={{ base: '100%', md: '300px' }}>
                 <InputGroup>
                   <InputLeftElement pointerEvents="none">
                     <MdSearch color="gray.300" />
@@ -528,42 +528,53 @@ function UserManagement() {
                     placeholder="Buscar por email o nombre..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
+                    size={{ base: 'sm', md: 'md' }}
                   />
                 </InputGroup>
               </Box>
               
-              <Select 
-                value={statusFilter} 
-                onChange={(e) => setStatusFilter(e.target.value)}
-                w="200px"
-              >
-                <option value="all">Todos los estados</option>
-                <option value="pending">Pendientes</option>
-                <option value="terminado">Terminados</option>
-                <option value="completed">Completados</option>
-              </Select>
-              
-              <Select 
-                value={planFilter} 
-                onChange={(e) => setPlanFilter(e.target.value)}
-                w="200px"
-              >
-                <option value="all">Todos los planes</option>
-                <option value="Plan Brify">Plan Brify</option>
-                <option value="Sin Plan">Sin Plan</option>
-              </Select>
-              
-              <Button leftIcon={<MdFilterList />} variant="outline" onClick={onFiltersOpen}>
-                Más Filtros
-              </Button>
-            </HStack>
+              <HStack spacing={2} wrap="wrap">
+                <Select 
+                  value={statusFilter} 
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  w={{ base: '48%', md: '200px' }}
+                  size={{ base: 'sm', md: 'md' }}
+                >
+                  <option value="all">Todos los estados</option>
+                  <option value="pending">Pendientes</option>
+                  <option value="terminado">Terminados</option>
+                  <option value="completed">Completados</option>
+                </Select>
+                
+                <Select 
+                  value={planFilter} 
+                  onChange={(e) => setPlanFilter(e.target.value)}
+                  w={{ base: '48%', md: '200px' }}
+                  size={{ base: 'sm', md: 'md' }}
+                >
+                  <option value="all">Todos los planes</option>
+                  <option value="Plan Brify">Plan Brify</option>
+                  <option value="Sin Plan">Sin Plan</option>
+                </Select>
+                
+                <Button 
+                  leftIcon={<MdFilterList />} 
+                  variant="outline" 
+                  onClick={onFiltersOpen}
+                  size={{ base: 'sm', md: 'md' }}
+                  flex={{ base: '1', md: 'auto' }}
+                >
+                  Más Filtros
+                </Button>
+              </HStack>
+            </VStack>
           </CardBody>
         </Card>
 
         {/* Tabla de Usuarios */}
         <Card>
           <CardHeader>
-            <HStack justify="space-between">
+            <HStack justify="space-between" flexWrap="wrap" gap={2}>
               <Heading size="md">Lista de Usuarios ({filteredUsers.length})</Heading>
               <Button colorScheme="blue" size="sm" onClick={handleExportCSV}>
                 Exportar CSV
@@ -572,81 +583,205 @@ function UserManagement() {
           </CardHeader>
           
           <CardBody>
-            <TableContainer>
-              <Table variant="simple" size="sm">
-                <Thead>
-                  <Tr>
-                    <Th>Usuario</Th>
-                    <Th>Email</Th>
-                    <Th>Plan</Th>
-                    <Th>Estado</Th>
-                    <Th>Pago</Th>
-                    <Th>Registro</Th>
-                    <Th>Almacenamiento</Th>
-                    <Th>Acciones</Th>
-                  </Tr>
-                </Thead>
-                <Tbody>
-                  {paginatedUsers.map((user) => (
-                    <Tr key={user.id}>
-                      <Td>
-                        <HStack spacing={3}>
-                          <Avatar 
-                            size="sm" 
-                            name={user.name} 
-                            src={user.avatar_url}
-                          />
-                          <VStack align="start" spacing={0}>
-                            <Text fontWeight="medium" fontSize="sm">
-                              {user.name || 'Sin nombre'}
-                            </Text>
-                            <HStack spacing={1}>
-                              {user.admin && (
-                                <Badge colorScheme="purple" size="sm">
-                                  <MdAdminPanelSettings style={{ marginRight: '2px' }} />
-                                  Admin
-                                </Badge>
-                              )}
-                              {user.is_active ? (
-                                <Badge colorScheme="green" size="sm">Activo</Badge>
-                              ) : (
-                                <Badge colorScheme="red" size="sm">Inactivo</Badge>
-                              )}
-                            </HStack>
-                          </VStack>
-                        </HStack>
-                      </Td>
-                      
-                      <Td>
-                        <Text fontSize="sm">{user.email || 'N/A'}</Text>
-                        <Text fontSize="xs" color="gray.500">
-                          {user.registered_via}
-                        </Text>
-                      </Td>
-                      
-                      <Td>
-                        <VStack align="start" spacing={1}>
-                          <Text fontSize="sm" fontWeight="medium">
-                            {user.plan_name}
-                          </Text>
+            {/* Desktop: Tabla tradicional */}
+            <Box display={{ base: 'none', lg: 'block' }}>
+              <TableContainer>
+                <Table variant="simple" size="sm">
+                  <Thead>
+                    <Tr>
+                      <Th>Usuario</Th>
+                      <Th>Email</Th>
+                      <Th>Plan</Th>
+                      <Th>Estado</Th>
+                      <Th>Pago</Th>
+                      <Th>Registro</Th>
+                      <Th>Almacenamiento</Th>
+                      <Th>Acciones</Th>
+                    </Tr>
+                  </Thead>
+                  <Tbody>
+                    {paginatedUsers.map((user) => (
+                      <Tr key={user.id}>
+                        <Td>
+                          <HStack spacing={3}>
+                            <Avatar 
+                              size="sm" 
+                              name={user.name} 
+                              src={user.avatar_url}
+                            />
+                            <VStack align="start" spacing={0}>
+                              <Text fontWeight="medium" fontSize="sm">
+                                {user.name || 'Sin nombre'}
+                              </Text>
+                              <HStack spacing={1}>
+                                {user.admin && (
+                                  <Badge colorScheme="purple" size="sm">
+                                    <MdAdminPanelSettings style={{ marginRight: '2px' }} />
+                                    Admin
+                                  </Badge>
+                                )}
+                                {user.is_active ? (
+                                  <Badge colorScheme="green" size="sm">Activo</Badge>
+                                ) : (
+                                  <Badge colorScheme="red" size="sm">Inactivo</Badge>
+                                )}
+                              </HStack>
+                            </VStack>
+                          </HStack>
+                        </Td>
+                        
+                        <Td>
+                          <Text fontSize="sm">{user.email || 'N/A'}</Text>
                           <Text fontSize="xs" color="gray.500">
-                            ${user.plan_price} CLP
+                            {user.registered_via}
                           </Text>
+                        </Td>
+                        
+                        <Td>
+                          <VStack align="start" spacing={1}>
+                            <Text fontSize="sm" fontWeight="medium">
+                              {user.plan_name}
+                            </Text>
+                            <Text fontSize="xs" color="gray.500">
+                              ${user.plan_price} CLP
+                            </Text>
+                          </VStack>
+                        </Td>
+                        
+                        <Td>
+                          <Badge 
+                            colorScheme={getStatusColor(user.onboarding_status)} 
+                            variant="subtle"
+                          >
+                            {getStatusIcon(user.onboarding_status)}
+                            <Text ml={1}>{user.onboarding_status}</Text>
+                          </Badge>
+                        </Td>
+                        
+                        <Td>
+                          <VStack align="start" spacing={1}>
+                            <Badge 
+                              colorScheme={getPaymentStatusColor(user.payment_status)} 
+                              variant="outline"
+                              size="sm"
+                            >
+                              {user.payment_status}
+                            </Badge>
+                            <Text fontSize="xs" color="gray.500">
+                              {user.payment_provider}
+                            </Text>
+                          </VStack>
+                        </Td>
+                        
+                        <Td>
+                          <VStack align="start" spacing={1}>
+                            <Text fontSize="sm">{formatDate(user.created_at)}</Text>
+                            <Text fontSize="xs" color="gray.500">
+                              {user.plan_expiration && `Exp: ${formatDate(user.plan_expiration)}`}
+                            </Text>
+                          </VStack>
+                        </Td>
+                        
+                        <Td>
+                          <VStack align="start" spacing={1}>
+                            <Text fontSize="sm">
+                              {formatBytes(user.used_storage_bytes)}
+                            </Text>
+                            <Progress 
+                              value={(user.used_storage_bytes / 100000000) * 100} 
+                              size="sm" 
+                              colorScheme="blue" 
+                              w="60px"
+                            />
+                          </VStack>
+                        </Td>
+                        
+                        <Td>
+                          <Menu>
+                            <MenuButton
+                              as={IconButton}
+                              icon={<MdMoreVert />}
+                              variant="ghost"
+                              size="sm"
+                            />
+                            <MenuList>
+                              <MenuItem 
+                                icon={<MdVisibility />}
+                                onClick={() => openUserDetails(user)}
+                              >
+                                Ver Detalles
+                              </MenuItem>
+                              <MenuItem 
+                                icon={<MdPayment />}
+                                onClick={() => handleViewPayments(user)}
+                              >
+                                Ver Pagos
+                              </MenuItem>
+                            </MenuList>
+                          </Menu>
+                        </Td>
+                      </Tr>
+                    ))}
+                  </Tbody>
+                </Table>
+              </TableContainer>
+            </Box>
+
+            {/* Mobile: Cards sin scroll */}
+            <VStack display={{ base: 'flex', lg: 'none' }} spacing={4} align="stretch">
+              {paginatedUsers.map((user) => (
+                <Card key={user.id} variant="outline" size="sm">
+                  <CardBody p={4}>
+                    <VStack spacing={4} align="stretch">
+                      {/* Header del usuario */}
+                      <HStack spacing={3} align="start">
+                        <Avatar size="md" name={user.name} src={user.avatar_url} />
+                        <VStack align="start" spacing={1} flex={1}>
+                          <Text fontSize="md" fontWeight="bold">
+                            {user.name || 'Sin nombre'}
+                          </Text>
+                          <Text fontSize="sm" color="gray.600">
+                            {user.email || 'N/A'}
+                          </Text>
+                          <HStack spacing={2} flexWrap="wrap">
+                            {user.admin && (
+                              <Badge colorScheme="purple" size="sm">
+                                <MdAdminPanelSettings style={{ marginRight: '2px' }} />
+                                Admin
+                              </Badge>
+                            )}
+                            {user.is_active ? (
+                              <Badge colorScheme="green" size="sm">Activo</Badge>
+                            ) : (
+                              <Badge colorScheme="red" size="sm">Inactivo</Badge>
+                            )}
+                          </HStack>
                         </VStack>
-                      </Td>
-                      
-                      <Td>
-                        <Badge 
-                          colorScheme={getStatusColor(user.onboarding_status)} 
-                          variant="subtle"
-                        >
-                          {getStatusIcon(user.onboarding_status)}
-                          <Text ml={1}>{user.onboarding_status}</Text>
-                        </Badge>
-                      </Td>
-                      
-                      <Td>
+                      </HStack>
+
+                      {/* Información del plan y estado */}
+                      <SimpleGrid columns={2} spacing={3}>
                         <VStack align="start" spacing={1}>
+                          <Text fontSize="xs" color="gray.600">Plan</Text>
+                          <Text fontSize="sm" fontWeight="medium">{user.plan_name}</Text>
+                          <Text fontSize="xs" color="gray.500">${user.plan_price} CLP</Text>
+                        </VStack>
+                        <VStack align="start" spacing={1}>
+                          <Text fontSize="xs" color="gray.600">Estado</Text>
+                          <Badge 
+                            colorScheme={getStatusColor(user.onboarding_status)} 
+                            variant="subtle"
+                            size="sm"
+                          >
+                            {user.onboarding_status}
+                          </Badge>
+                        </VStack>
+                      </SimpleGrid>
+
+                      {/* Información de pago */}
+                      <VStack align="start" spacing={1}>
+                        <Text fontSize="xs" color="gray.600">Pago</Text>
+                        <HStack spacing={2} flexWrap="wrap">
                           <Badge 
                             colorScheme={getPaymentStatusColor(user.payment_status)} 
                             variant="outline"
@@ -657,113 +792,162 @@ function UserManagement() {
                           <Text fontSize="xs" color="gray.500">
                             {user.payment_provider}
                           </Text>
-                        </VStack>
-                      </Td>
-                      
-                      <Td>
+                        </HStack>
+                      </VStack>
+
+                      {/* Registro y almacenamiento */}
+                      <SimpleGrid columns={2} spacing={3}>
                         <VStack align="start" spacing={1}>
+                          <Text fontSize="xs" color="gray.600">Registro</Text>
                           <Text fontSize="sm">{formatDate(user.created_at)}</Text>
-                          <Text fontSize="xs" color="gray.500">
-                            {user.plan_expiration && `Exp: ${formatDate(user.plan_expiration)}`}
-                          </Text>
                         </VStack>
-                      </Td>
-                      
-                      <Td>
                         <VStack align="start" spacing={1}>
-                          <Text fontSize="sm">
-                            {formatBytes(user.used_storage_bytes)}
-                          </Text>
-                          <Progress 
-                            value={(user.used_storage_bytes / 100000000) * 100} 
-                            size="sm" 
-                            colorScheme="blue" 
-                            w="60px"
-                          />
+                          <Text fontSize="xs" color="gray.600">Almacenamiento</Text>
+                          <Text fontSize="sm">{formatBytes(user.used_storage_bytes)}</Text>
                         </VStack>
-                      </Td>
-                      
-                      <Td>
-                        <Menu>
-                          <MenuButton
-                            as={IconButton}
-                            icon={<MdMoreVert />}
-                            variant="ghost"
-                            size="sm"
-                          />
-                          <MenuList>
-                            <MenuItem 
-                              icon={<MdVisibility />}
-                              onClick={() => openUserDetails(user)}
-                            >
-                              Ver Detalles
-                            </MenuItem>
-                            <MenuItem 
-                              icon={<MdPayment />}
-                              onClick={() => handleViewPayments(user)}
-                            >
-                              Ver Pagos
-                            </MenuItem>
-                          </MenuList>
-                        </Menu>
-                      </Td>
-                    </Tr>
-                  ))}
-                </Tbody>
-              </Table>
-            </TableContainer>
+                      </SimpleGrid>
+
+                      {/* Acciones */}
+                      <HStack spacing={2} justify="flex-end">
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          leftIcon={<MdVisibility />}
+                          onClick={() => openUserDetails(user)}
+                        >
+                          Ver
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          colorScheme="blue" 
+                          leftIcon={<MdPayment />}
+                          onClick={() => handleViewPayments(user)}
+                        >
+                          Pagos
+                        </Button>
+                      </HStack>
+                    </VStack>
+                  </CardBody>
+                </Card>
+              ))}
+            </VStack>
             
-            {/* Controles de Paginación */}
+            {/* Controles de Paginación - Desktop */}
             {totalPages > 1 && (
-              <Flex justify="space-between" align="center" mt={4}>
-                <Text fontSize="sm" color="gray.600">
-                  Mostrando {(currentPage - 1) * itemsPerPage + 1} a {Math.min(currentPage * itemsPerPage, filteredUsers.length)} de {filteredUsers.length} usuarios
-                </Text>
-                <HStack spacing={2}>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => handlePageChange(currentPage - 1)}
-                    isDisabled={currentPage === 1}
-                  >
-                    Anterior
-                  </Button>
-                  
-                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                    let pageNum;
-                    if (totalPages <= 5) {
-                      pageNum = i + 1;
-                    } else if (currentPage <= 3) {
-                      pageNum = i + 1;
-                    } else if (currentPage >= totalPages - 2) {
-                      pageNum = totalPages - 4 + i;
-                    } else {
-                      pageNum = currentPage - 2 + i;
-                    }
+              <Box display={{ base: 'none', lg: 'block' }}>
+                <Flex justify="space-between" align="center" mt={4}>
+                  <Text fontSize="sm" color="gray.600">
+                    Mostrando {(currentPage - 1) * itemsPerPage + 1} a {Math.min(currentPage * itemsPerPage, filteredUsers.length)} de {filteredUsers.length} usuarios
+                  </Text>
+                  <HStack spacing={2}>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      isDisabled={currentPage === 1}
+                    >
+                      Anterior
+                    </Button>
                     
-                    return (
-                      <Button
-                        key={pageNum}
-                        size="sm"
-                        variant={currentPage === pageNum ? "solid" : "outline"}
-                        colorScheme={currentPage === pageNum ? "blue" : "gray"}
-                        onClick={() => handlePageChange(pageNum)}
-                      >
-                        {pageNum}
-                      </Button>
-                    );
-                  })}
+                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                      let pageNum;
+                      if (totalPages <= 5) {
+                        pageNum = i + 1;
+                      } else if (currentPage <= 3) {
+                        pageNum = i + 1;
+                      } else if (currentPage >= totalPages - 2) {
+                        pageNum = totalPages - 4 + i;
+                      } else {
+                        pageNum = currentPage - 2 + i;
+                      }
+                      
+                      return (
+                        <Button
+                          key={pageNum}
+                          size="sm"
+                          variant={currentPage === pageNum ? "solid" : "outline"}
+                          colorScheme={currentPage === pageNum ? "blue" : "gray"}
+                          onClick={() => handlePageChange(pageNum)}
+                        >
+                          {pageNum}
+                        </Button>
+                      );
+                    })}
+                    
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      isDisabled={currentPage === totalPages}
+                    >
+                      Siguiente
+                    </Button>
+                  </HStack>
+                </Flex>
+              </Box>
+            )}
+
+            {/* Controles de Paginación - Mobile */}
+            {totalPages > 1 && (
+              <Box display={{ base: 'block', lg: 'none' }} mt={6}>
+                <VStack spacing={4}>
+                  <Text fontSize="sm" color="gray.600" textAlign="center">
+                    Página {currentPage} de {totalPages}
+                  </Text>
+                  <Text fontSize="xs" color="gray.500" textAlign="center">
+                    Mostrando {Math.min((currentPage - 1) * itemsPerPage + 1, filteredUsers.length)} - {Math.min(currentPage * itemsPerPage, filteredUsers.length)} de {filteredUsers.length} usuarios
+                  </Text>
                   
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => handlePageChange(currentPage + 1)}
-                    isDisabled={currentPage === totalPages}
-                  >
-                    Siguiente
-                  </Button>
-                </HStack>
-              </Flex>
+                  <HStack spacing={2} justify="center" flexWrap="wrap">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      isDisabled={currentPage === 1}
+                    >
+                      ← Anterior
+                    </Button>
+                    
+                    {/* Números de página en móvil */}
+                    <HStack spacing={1}>
+                      {Array.from({ length: Math.min(3, totalPages) }, (_, i) => {
+                        let pageNum;
+                        if (totalPages <= 3) {
+                          pageNum = i + 1;
+                        } else if (currentPage === 1) {
+                          pageNum = i + 1;
+                        } else if (currentPage === totalPages) {
+                          pageNum = totalPages - 2 + i;
+                        } else {
+                          pageNum = currentPage - 1 + i;
+                        }
+                        
+                        return (
+                          <Button
+                            key={pageNum}
+                            size="sm"
+                            variant={currentPage === pageNum ? "solid" : "outline"}
+                            colorScheme={currentPage === pageNum ? "blue" : "gray"}
+                            onClick={() => handlePageChange(pageNum)}
+                            minW="40px"
+                          >
+                            {pageNum}
+                          </Button>
+                        );
+                      })}
+                    </HStack>
+                    
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      isDisabled={currentPage === totalPages}
+                    >
+                      Siguiente →
+                    </Button>
+                  </HStack>
+                </VStack>
+              </Box>
             )}
           </CardBody>
         </Card>

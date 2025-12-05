@@ -7,6 +7,8 @@ import {
   Badge,
   Button,
   Input,
+  InputGroup,
+  InputLeftElement,
   Table,
   Thead,
   Tbody,
@@ -48,6 +50,7 @@ import {
   NumberIncrementStepper,
   NumberDecrementStepper,
   Textarea,
+  Flex,
 } from '@chakra-ui/react';
 import { 
   MdSearch, 
@@ -199,26 +202,26 @@ function PlanManagement() {
   const averagePrice = plans.length > 0 ? plans.reduce((sum, p) => sum + p.price, 0) / plans.length : 0;
 
   return (
-    <Box p={6} bg="gray.50" minH="100vh">
-      <VStack spacing={6} align="stretch">
+    <Box p={{ base: 3, md: 6 }} bg="gray.50" minH="100vh">
+      <VStack spacing={{ base: 4, md: 6 }} align="stretch">
         {/* Header */}
         <Box>
-          <Heading size="lg" color="purple.600" mb={2}>
+          <Heading size={{ base: 'md', md: 'lg' }} color="purple.600" mb={2}>
             Gestión de Planes
           </Heading>
-          <Text color="gray.600">
+          <Text color="gray.600" fontSize={{ base: 'sm', md: 'md' }}>
             Administra planes, precios y configuraciones de suscripción
           </Text>
         </Box>
 
         {/* Estadísticas de Planes */}
-        <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} spacing={4}>
+        <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} spacing={3}>
           <Card>
             <CardBody>
-              <Stat>
+              <Stat textAlign="center">
                 <StatLabel>Total Planes</StatLabel>
                 <StatNumber color="purple.600">{totalPlans}</StatNumber>
-                <StatHelpText>
+                <StatHelpText justify="center">
                   Planes activos
                 </StatHelpText>
               </Stat>
@@ -227,10 +230,10 @@ function PlanManagement() {
           
           <Card>
             <CardBody>
-              <Stat>
+              <Stat textAlign="center">
                 <StatLabel>Total Usuarios</StatLabel>
                 <StatNumber color="blue.600">{totalUsers}</StatNumber>
-                <StatHelpText>
+                <StatHelpText justify="center">
                   <StatArrow type="increase" />
                   Usuarios con planes
                 </StatHelpText>
@@ -240,12 +243,12 @@ function PlanManagement() {
           
           <Card>
             <CardBody>
-              <Stat>
+              <Stat textAlign="center">
                 <StatLabel>Ingresos Totales</StatLabel>
                 <StatNumber color="green.600">
                   {formatCurrency(totalRevenue)}
                 </StatNumber>
-                <StatHelpText>
+                <StatHelpText justify="center">
                   De todos los planes
                 </StatHelpText>
               </Stat>
@@ -254,12 +257,12 @@ function PlanManagement() {
           
           <Card>
             <CardBody>
-              <Stat>
+              <Stat textAlign="center">
                 <StatLabel>Precio Promedio</StatLabel>
                 <StatNumber color="orange.600">
                   {formatCurrency(averagePrice)}
                 </StatNumber>
-                <StatHelpText>
+                <StatHelpText justify="center">
                   Por plan
                 </StatHelpText>
               </Stat>
@@ -270,19 +273,24 @@ function PlanManagement() {
         {/* Búsqueda */}
         <Card>
           <CardBody>
-            <HStack spacing={4}>
+            <VStack spacing={3} align="stretch">
               <Box flex={1}>
-                <Input
-                  placeholder="Buscar planes por nombre o código..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  leftIcon={<MdSearch />}
-                />
+                <InputGroup>
+                  <InputLeftElement pointerEvents="none">
+                    <MdSearch color="gray.300" />
+                  </InputLeftElement>
+                  <Input
+                    placeholder="Buscar planes por nombre o código..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    size={{ base: 'sm', md: 'md' }}
+                  />
+                </InputGroup>
               </Box>
-              <Button variant="outline">
+              <Button variant="outline" size={{ base: 'sm', md: 'md' }}>
                 Filtrar por Tipo
               </Button>
-            </HStack>
+            </VStack>
           </CardBody>
         </Card>
 
@@ -293,53 +301,183 @@ function PlanManagement() {
           </CardHeader>
           
           <CardBody>
-            <TableContainer>
-              <Table variant="simple" size="sm">
-                <Thead>
-                  <Tr>
-                    <Th>Plan</Th>
-                    <Th>Tipo</Th>
-                    <Th>Precio</Th>
-                    <Th>Duración</Th>
-                    <Th>Almacenamiento</Th>
-                    <Th>Tokens</Th>
-                    <Th>Usuarios</Th>
-                    <Th>Ingresos</Th>
-                    <Th>Acciones</Th>
-                  </Tr>
-                </Thead>
-                <Tbody>
-                  {plans.map((plan) => (
-                    <Tr key={plan.id}>
-                      <Td>
-                        <VStack align="start" spacing={1}>
+            {/* Desktop: Tabla tradicional */}
+            <Box display={{ base: 'none', lg: 'block' }}>
+              <TableContainer>
+                <Table variant="simple" size="sm">
+                  <Thead>
+                    <Tr>
+                      <Th>Plan</Th>
+                      <Th>Tipo</Th>
+                      <Th>Precio</Th>
+                      <Th>Duración</Th>
+                      <Th>Almacenamiento</Th>
+                      <Th>Tokens</Th>
+                      <Th>Usuarios</Th>
+                      <Th>Ingresos</Th>
+                      <Th>Acciones</Th>
+                    </Tr>
+                  </Thead>
+                  <Tbody>
+                    {plans.map((plan) => (
+                      <Tr key={plan.id}>
+                        <Td>
+                          <VStack align="start" spacing={1}>
+                            <HStack spacing={2}>
+                              <MdDiamond color="purple" />
+                              <Text fontWeight="bold" fontSize="sm">
+                                {plan.name}
+                              </Text>
+                            </HStack>
+                            <Text fontSize="xs" color="gray.500">
+                              {plan.name_es}
+                            </Text>
+                            <Text fontSize="xs" color="gray.400" fontFamily="mono">
+                              {plan.plan_code}
+                            </Text>
+                          </VStack>
+                        </Td>
+                        
+                        <Td>
+                          <Badge 
+                            colorScheme={getPlanTypeColor(plan.service_type)} 
+                            variant="subtle"
+                          >
+                            {plan.service_type}
+                          </Badge>
+                        </Td>
+                        
+                        <Td>
+                          <VStack align="start" spacing={1}>
+                            <Text fontWeight="bold" color="green.600">
+                              {formatCurrency(plan.price)}
+                            </Text>
+                            {plan.prueba_gratis && (
+                              <Badge colorScheme="blue" size="sm">
+                                Prueba Gratis
+                              </Badge>
+                            )}
+                          </VStack>
+                        </Td>
+                        
+                        <Td>
+                          <HStack spacing={1}>
+                            <MdSchedule size={16} />
+                            <Text fontSize="sm">
+                              {plan.duration_days} días
+                            </Text>
+                          </HStack>
+                        </Td>
+                        
+                        <Td>
+                          <VStack align="start" spacing={1}>
+                            <HStack spacing={1}>
+                              <MdStorage size={16} />
+                              <Text fontSize="sm">
+                                {formatBytes(plan.storage_limit_bytes)}
+                              </Text>
+                            </HStack>
+                            <Progress 
+                              value={Math.min((plan.storage_limit_bytes / (1024*1024*1024)) * 10, 100)} 
+                              size="sm" 
+                              colorScheme="blue" 
+                              w="60px"
+                            />
+                          </VStack>
+                        </Td>
+                        
+                        <Td>
+                          <HStack spacing={1}>
+                            <MdToken size={16} />
+                            <Text fontSize="sm">
+                              {plan.token_limit_usage?.toLocaleString() || 'Ilimitado'}
+                            </Text>
+                          </HStack>
+                        </Td>
+                        
+                        <Td>
+                          <VStack align="start" spacing={1}>
+                            <Text fontWeight="bold" color="blue.600">
+                              {plan.user_count}
+                            </Text>
+                            <Text fontSize="xs" color="gray.500">
+                              usuarios activos
+                            </Text>
+                          </VStack>
+                        </Td>
+                        
+                        <Td>
+                          <VStack align="start" spacing={1}>
+                            <Text fontWeight="bold" color="green.600">
+                              {formatCurrency(plan.total_revenue)}
+                            </Text>
+                            <Text fontSize="xs" color="gray.500">
+                              {plan.payment_count} pagos
+                            </Text>
+                          </VStack>
+                        </Td>
+                        
+                        <Td>
+                          <Menu>
+                            <MenuButton
+                              as={IconButton}
+                              icon={<MdMoreVert />}
+                              variant="ghost"
+                              size="sm"
+                            />
+                            <MenuList>
+                              <MenuItem 
+                                icon={<MdVisibility />}
+                                onClick={() => openPlanDetails(plan)}
+                              >
+                                Ver Detalles
+                              </MenuItem>
+                            </MenuList>
+                          </Menu>
+                        </Td>
+                      </Tr>
+                    ))}
+                  </Tbody>
+                </Table>
+              </TableContainer>
+            </Box>
+
+            {/* Mobile: Cards sin scroll */}
+            <VStack display={{ base: 'flex', lg: 'none' }} spacing={4} align="stretch">
+              {plans.map((plan) => (
+                <Card key={plan.id} variant="outline" size="sm">
+                  <CardBody p={4}>
+                    <VStack spacing={4} align="stretch">
+                      {/* Header del plan */}
+                      <HStack spacing={3} align="start">
+                        <VStack align="start" spacing={1} flex={1}>
                           <HStack spacing={2}>
                             <MdDiamond color="purple" />
-                            <Text fontWeight="bold" fontSize="sm">
+                            <Text fontSize="md" fontWeight="bold">
                               {plan.name}
                             </Text>
                           </HStack>
-                          <Text fontSize="xs" color="gray.500">
+                          <Text fontSize="sm" color="gray.600">
                             {plan.name_es}
                           </Text>
                           <Text fontSize="xs" color="gray.400" fontFamily="mono">
                             {plan.plan_code}
                           </Text>
                         </VStack>
-                      </Td>
-                      
-                      <Td>
                         <Badge 
                           colorScheme={getPlanTypeColor(plan.service_type)} 
                           variant="subtle"
+                          size="sm"
                         >
                           {plan.service_type}
                         </Badge>
-                      </Td>
-                      
-                      <Td>
+                      </HStack>
+
+                      {/* Precio y duración */}
+                      <SimpleGrid columns={2} spacing={3}>
                         <VStack align="start" spacing={1}>
-                          <Text fontWeight="bold" color="green.600">
+                          <Text fontSize="xs" color="gray.600">Precio</Text>
+                          <Text fontSize="md" fontWeight="bold" color="green.600">
                             {formatCurrency(plan.price)}
                           </Text>
                           {plan.prueba_gratis && (
@@ -348,88 +486,71 @@ function PlanManagement() {
                             </Badge>
                           )}
                         </VStack>
-                      </Td>
-                      
-                      <Td>
-                        <HStack spacing={1}>
-                          <MdSchedule size={16} />
-                          <Text fontSize="sm">
-                            {plan.duration_days} días
-                          </Text>
-                        </HStack>
-                      </Td>
-                      
-                      <Td>
                         <VStack align="start" spacing={1}>
+                          <Text fontSize="xs" color="gray.600">Duración</Text>
                           <HStack spacing={1}>
-                            <MdStorage size={16} />
+                            <MdSchedule size={14} />
+                            <Text fontSize="sm">{plan.duration_days} días</Text>
+                          </HStack>
+                        </VStack>
+                      </SimpleGrid>
+
+                      {/* Almacenamiento y tokens */}
+                      <SimpleGrid columns={2} spacing={3}>
+                        <VStack align="start" spacing={1}>
+                          <Text fontSize="xs" color="gray.600">Almacenamiento</Text>
+                          <HStack spacing={1}>
+                            <MdStorage size={14} />
+                            <Text fontSize="sm">{formatBytes(plan.storage_limit_bytes)}</Text>
+                          </HStack>
+                        </VStack>
+                        <VStack align="start" spacing={1}>
+                          <Text fontSize="xs" color="gray.600">Tokens</Text>
+                          <HStack spacing={1}>
+                            <MdToken size={14} />
                             <Text fontSize="sm">
-                              {formatBytes(plan.storage_limit_bytes)}
+                              {plan.token_limit_usage?.toLocaleString() || 'Ilimitado'}
                             </Text>
                           </HStack>
-                          <Progress 
-                            value={Math.min((plan.storage_limit_bytes / (1024*1024*1024)) * 10, 100)} 
-                            size="sm" 
-                            colorScheme="blue" 
-                            w="60px"
-                          />
                         </VStack>
-                      </Td>
-                      
-                      <Td>
-                        <HStack spacing={1}>
-                          <MdToken size={16} />
-                          <Text fontSize="sm">
-                            {plan.token_limit_usage?.toLocaleString() || 'Ilimitado'}
-                          </Text>
-                        </HStack>
-                      </Td>
-                      
-                      <Td>
+                      </SimpleGrid>
+
+                      {/* Estadísticas */}
+                      <SimpleGrid columns={2} spacing={3}>
                         <VStack align="start" spacing={1}>
-                          <Text fontWeight="bold" color="blue.600">
+                          <Text fontSize="xs" color="gray.600">Usuarios</Text>
+                          <Text fontSize="md" fontWeight="bold" color="blue.600">
                             {plan.user_count}
                           </Text>
-                          <Text fontSize="xs" color="gray.500">
-                            usuarios activos
-                          </Text>
+                          <Text fontSize="xs" color="gray.500">usuarios activos</Text>
                         </VStack>
-                      </Td>
-                      
-                      <Td>
                         <VStack align="start" spacing={1}>
-                          <Text fontWeight="bold" color="green.600">
+                          <Text fontSize="xs" color="gray.600">Ingresos</Text>
+                          <Text fontSize="md" fontWeight="bold" color="green.600">
                             {formatCurrency(plan.total_revenue)}
                           </Text>
                           <Text fontSize="xs" color="gray.500">
                             {plan.payment_count} pagos
                           </Text>
                         </VStack>
-                      </Td>
-                      
-                      <Td>
-                        <Menu>
-                          <MenuButton
-                            as={IconButton}
-                            icon={<MdMoreVert />}
-                            variant="ghost"
-                            size="sm"
-                          />
-                          <MenuList>
-                            <MenuItem 
-                              icon={<MdVisibility />}
-                              onClick={() => openPlanDetails(plan)}
-                            >
-                              Ver Detalles
-                            </MenuItem>
-                          </MenuList>
-                        </Menu>
-                      </Td>
-                    </Tr>
-                  ))}
-                </Tbody>
-              </Table>
-            </TableContainer>
+                      </SimpleGrid>
+
+                      {/* Acciones */}
+                      <HStack justify="flex-end">
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          leftIcon={<MdVisibility />}
+                          onClick={() => openPlanDetails(plan)}
+                        >
+                          Ver Detalles
+                        </Button>
+                      </HStack>
+                    </VStack>
+                  </CardBody>
+                </Card>
+              ))}
+            </VStack>
           </CardBody>
         </Card>
       </VStack>
