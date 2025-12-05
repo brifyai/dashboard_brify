@@ -84,7 +84,7 @@ function UserManagement() {
 
   useEffect(() => {
     filterUsers();
-  }, [users, searchTerm, statusFilter, planFilter]);
+  }, [users, searchTerm, statusFilter, planFilter, dateFrom, dateTo, activeFilter, storageFilter]);
 
   // Escuchar cuando se selecciona un usuario desde el dashboard
   useEffect(() => {

@@ -85,7 +85,7 @@ function PaymentManagement() {
   useEffect(() => {
     filterPayments();
     setCurrentPage(1); // Reset to first page when filters change
-  }, [payments, searchTerm, statusFilter, providerFilter]);
+  }, [payments, searchTerm, statusFilter, providerFilter, dateFrom, dateTo, amountFilter]);
 
   // Detectar usuario seleccionado para filtrar pagos
   useEffect(() => {
@@ -204,6 +204,50 @@ function PaymentManagement() {
     // Filtro por proveedor
     if (providerFilter !== 'all') {
       filtered = filtered.filter(payment => payment.payment_provider === providerFilter);
+    }
+
+    // Filtro por rango de fechas
+    if (dateFrom || dateTo) {
+      filtered = filtered.filter(payment => {
+        if (!payment.paid_at) return false;
+        
+        const paymentDate = new Date(payment.paid_at);
+        const fromDate = dateFrom ? new Date(dateFrom) : null;
+        const toDate = dateTo ? new Date(dateTo) : null;
+        
+        // Ajustar fecha final para incluir todo el día
+        if (toDate) {
+          toDate.setHours(23, 59, 59, 999);
+        }
+        
+        if (fromDate && toDate) {
+          return paymentDate >= fromDate && paymentDate <= toDate;
+        } else if (fromDate) {
+          return paymentDate >= fromDate;
+        } else if (toDate) {
+          return paymentDate <= toDate;
+        }
+        
+        return true;
+      });
+    }
+
+    // Filtro por rango de montos
+    if (amountFilter !== 'all') {
+      filtered = filtered.filter(payment => {
+        const amount = payment.amount_usd || 0;
+        
+        switch (amountFilter) {
+          case 'low':
+            return amount >= 0 && amount <= 50;
+          case 'medium':
+            return amount > 50 && amount <= 200;
+          case 'high':
+            return amount > 200;
+          default:
+            return true;
+        }
+      });
     }
 
     setFilteredPayments(filtered);
