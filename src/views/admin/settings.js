@@ -48,8 +48,8 @@ import { supabase } from '../../config/supabase';
 function Settings() {
   const { t } = useTranslation();
   const [settings, setSettings] = useState({
-    siteName: 'Horizon UI Dashboard',
-    siteDescription: 'Modern React Dashboard Template',
+    siteName: 'BrifyAI Dashboard',
+    siteDescription: 'Dashboard Inteligente de BrifyAI',
     timezone: 'UTC-8',
     dateFormat: 'MM/DD/YYYY',
     language: 'en',

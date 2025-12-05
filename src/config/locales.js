@@ -3,7 +3,7 @@ export const es = {
   // Dashboard
   dashboard: {
     title: 'Panel Principal',
-    welcome: 'Bienvenido al Dashboard de Horizon UI',
+    welcome: 'Bienvenido al Dashboard de BrifyAI',
     viewAnalytics: 'Ver Análisis',
     totalUsers: 'Usuarios Totales',
     activeSessions: 'Sesiones Activas',
