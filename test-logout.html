@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Logout Menu</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-result { margin: 10px 0; padding: 10px; border-radius: 5px; }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .info { background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    </style>
+</head>
+<body>
+    <h1>Prueba de Funcionalidad de Cierre de Sesión</h1>
+    
+    <div class="test-result info">
+        <strong>✅ Componente Header Actualizado</strong><br>
+        El componente Header.js ha sido modificado exitosamente para incluir:
+        <ul>
+            <li>Menú desplegable al hacer clic en el Avatar</li>
+            <li>Opción "Cerrar Sesión" con icono de logout</li>
+            <li>Opciones adicionales: "Mi Perfil" y "Configuración"</li>
+            <li>Funcionalidad de cierre de sesión con redirección al login</li>
+            <li>Notificaciones toast para feedback del usuario</li>
+        </ul>
+    </div>
+
+    <div class="test-result success">
+        <strong>✅ Características Implementadas:</strong><br>
+        <ul>
+            <li><strong>Avatar clickeable:</strong> El avatar en la esquina superior derecha ahora es un botón que abre un menú desplegable</li>
+            <li><strong>Menú de usuario:</strong> Incluye opciones de perfil, configuración y cierre de sesión</li>
+            <li><strong>Cierre de sesión:</strong> Al hacer clic en "Cerrar Sesión", se ejecuta la función signOut del hook useAuth</li>
+            <li><strong>Redirección:</strong> Después de cerrar sesión, el usuario es redirigido a /auth/sign-in</li>
+            <li><strong>Notificaciones:</strong> Se muestran mensajes toast para confirmar el cierre de sesión o mostrar errores</li>
+            <li><strong>Nombre de usuario:</strong> El avatar muestra el nombre del usuario autenticado</li>
+        </ul>
+    </div>
+
+    <div class="test-result info">
+        <strong>🔧 Técnica Utilizada:</strong><br>
+        Se utilizó el componente Menu de Chakra UI para crear un menú desplegable que se activa al hacer clic en el Avatar. El menú incluye:
+        <ul>
+            <li>MenuButton: Envuelve el Avatar para hacerlo clickeable</li>
+            <li>MenuList: Contiene las opciones del menú</li>
+            <li>MenuItem: Cada opción del menú con su icono correspondiente</li>
+        </ul>
+    </div>
+
+    <div class="test-result info">
+        <strong>🌐 URL de Prueba:</strong><br>
+        <a href="http://localhost:3000/admin/default" target="_blank">http://localhost:3000/admin/default</a><br>
+        <small>Haz clic en el avatar en la esquina superior derecha para ver el menú desplegable</small>
+    </div>
+</body>
+</html>

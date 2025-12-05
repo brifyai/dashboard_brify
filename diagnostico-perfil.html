@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnóstico del Perfil</title>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .log { background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 4px; padding: 15px; margin: 10px 0; font-family: monospace; white-space: pre-wrap; }
+        .success { color: #28a745; }
+        .error { color: #dc3545; }
+        .warning { color: #ffc107; }
+        .info { color: #17a2b8; }
+        button { background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; margin: 5px; }
+        button:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Diagnóstico del Problema de Perfil</h1>
+        <p>Este script diagnosticará el problema del perfil en la aplicación.</p>
+        
+        <button onclick="ejecutarDiagnostico()">Ejecutar Diagnóstico</button>
+        <button onclick="limpiarLog()">Limpiar Log</button>
+        
+        <div id="log" class="log"></div>
+    </div>
+
+    <script>
+        // Configuración de Supabase
+        const supabaseUrl = 'https://hvhmsecjrkmlqlruznfe.supabase.co';
+        const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2aG1zZWNqcmttbHFscnV6bmZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ3ODkxMDYsImV4cCI6MjA4MDM2NTEwNn0.zE9klNhzyoW7tDqfE-69i4crKsdtzenP0i01c5xOgE4';
+        
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
+
+        function log(mensaje, tipo = 'info') {
+            const logDiv = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            const clase = tipo;
+            logDiv.innerHTML += `<span class="${clase}">[${timestamp}] ${mensaje}</span>\n`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        function limpiarLog() {
+            document.getElementById('log').innerHTML = '';
+        }
+
+        async function ejecutarDiagnostico() {
+            log('🔍 Iniciando diagnóstico del problema de perfil...\n', 'info');
+
+            try {
+                // 1. Verificar sesión actual
+                log('1️⃣ Verificando sesión actual...', 'info');
+                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+                
+                if (sessionError) {
+                    log(`❌ Error al obtener sesión: ${sessionError.message}`, 'error');
+                    return;
+                }
+
+                if (!session) {
+                    log('⚠️ No hay sesión activa', 'warning');
+                    log('💡 Solución: El usuario debe iniciar sesión primero', 'info');
+                    return;
+                }
+
+                log('✅ Sesión activa encontrada', 'success');
+                log(`👤 Usuario ID: ${session.user.id}`, 'info');
+                log(`📧 Email: ${session.user.email}`, 'info');
+                log(`🔑 Metadata: ${JSON.stringify(session.user.user_metadata, null, 2)}`, 'info');
+
+                // 2. Verificar si existe el registro en la tabla users
+                log('\n2️⃣ Verificando registro en tabla users...', 'info');
+                const { data: userRecord, error: userError } = await supabase
+                    .from('users')
+                    .select('*')
+                    .eq('id', session.user.id)
+                    .single();
+
+                if (userError) {
+                    log(`❌ Error al buscar usuario en tabla users: ${userError.message}`, 'error');
+                    log(`📋 Código de error: ${userError.code}`, 'info');
+                    
+                    if (userError.code === 'PGRST116') {
+                        log('💡 No existe registro en tabla users para este usuario', 'warning');
+                        log('💡 Solución: Crear registro automáticamente', 'info');
+                        
+                        // 3. Crear perfil automáticamente
+                        log('\n3️⃣ Creando perfil automáticamente...', 'info');
+                        
+                        const newProfile = {
+                            id: session.user.id,
+                            email: session.user.email,
+                            first_name: session.user.user_metadata?.full_name?.split(' ')[0] || '',
+                            last_name: session.user.user_metadata?.full_name?.split(' ')[1] || '',
+                            role: session.user.user_metadata?.role || 'user',
+                            status: 'active',
+                            created_at: new Date().toISOString(),
+                            updated_at: new Date().toISOString()
+                        };
+
+                        log(`📋 Datos del nuevo perfil: ${JSON.stringify(newProfile, null, 2)}`, 'info');
+
+                        const { data: createdProfile, error: createError } = await supabase
+                            .from('users')
+                            .insert([newProfile])
+                            .select()
+                            .single();
+
+                        if (createError) {
+                            log(`❌ Error al crear perfil: ${createError.message}`, 'error');
+                            log(`📋 Código de error: ${createError.code}`, 'info');
+                            return;
+                        }
+
+                        log('✅ Perfil creado exitosamente', 'success');
+                        log(`📋 Nuevo perfil: ${JSON.stringify(createdProfile, null, 2)}`, 'info');
+                    }
+                    return;
+                }
+
+                log('✅ Registro encontrado en tabla users:', 'success');
+                log(`📋 Datos: ${JSON.stringify(userRecord, null, 2)}`, 'info');
+
+                // 4. Verificar campos específicos que usa el componente Profile
+                log('\n4️⃣ Verificando campos específicos del perfil...', 'info');
+                const camposRequeridos = ['first_name', 'last_name', 'email', 'role'];
+                
+                camposRequeridos.forEach(campo => {
+                    if (userRecord[campo]) {
+                        log(`✅ ${campo}: ${userRecord[campo]}`, 'success');
+                    } else {
+                        log(`⚠️ ${campo}: No definido`, 'warning');
+                    }
+                });
+
+                log('\n🎉 Diagnóstico completado', 'success');
+                log('\n💡 Recomendaciones:', 'info');
+                log('1. Si el perfil se creó automáticamente, intenta recargar la página del perfil', 'info');
+                log('2. Si aún hay problemas, verifica los permisos RLS en Supabase', 'info');
+                log('3. Asegúrate de que el usuario tenga el rol correcto', 'info');
+
+            } catch (error) {
+                log(`💥 Error crítico durante diagnóstico: ${error.message}`, 'error');
+                console.error('Error completo:', error);
+            }
+        }
+
+        // Ejecutar diagnóstico automáticamente al cargar
+        window.addEventListener('load', () => {
+            log('🚀 Página cargada. Haz clic en "Ejecutar Diagnóstico" para comenzar.', 'info');
+        });
+    </script>
+</body>
+</html>

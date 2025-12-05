@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnóstico de Login - Supabase</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            max-width: 800px; 
+            margin: 0 auto; 
+            padding: 20px; 
+            background: #f5f5f5;
+        }
+        .container { 
+            background: white; 
+            padding: 30px; 
+            border-radius: 10px; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 { color: #333; text-align: center; }
+        .section { 
+            margin: 20px 0; 
+            padding: 15px; 
+            border: 1px solid #ddd; 
+            border-radius: 5px;
+        }
+        input { 
+            width: 100%; 
+            padding: 10px; 
+            margin: 5px 0; 
+            border: 1px solid #ccc; 
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button { 
+            background: #007bff; 
+            color: white; 
+            padding: 12px 24px; 
+            border: none; 
+            border-radius: 4px; 
+            cursor: pointer;
+            width: 100%;
+            margin: 5px 0;
+        }
+        button:hover { background: #0056b3; }
+        .success { color: #28a745; background: #d4edda; padding: 10px; border-radius: 4px; }
+        .error { color: #dc3545; background: #f8d7da; padding: 10px; border-radius: 4px; }
+        .info { color: #17a2b8; background: #d1ecf1; padding: 10px; border-radius: 4px; }
+        .log { 
+            background: #f8f9fa; 
+            border: 1px solid #dee2e6; 
+            padding: 10px; 
+            border-radius: 4px; 
+            font-family: monospace;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .step { margin: 10px 0; }
+        .step-number { 
+            background: #007bff; 
+            color: white; 
+            border-radius: 50%; 
+            width: 25px; 
+            height: 25px; 
+            display: inline-block; 
+            text-align: center; 
+            line-height: 25px;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Diagnóstico de Login - Supabase</h1>
+        
+        <div class="section">
+            <h3>📋 Instrucciones de uso:</h3>
+            <div class="step">
+                <span class="step-number">1</span>
+                <strong>Abre la consola del navegador (F12 → Console)</strong>
+            </div>
+            <div class="step">
+                <span class="step-number">2</span>
+                <strong>Ingresa tus credenciales de Supabase</strong>
+            </div>
+            <div class="step">
+                <span class="step-number">3</span>
+                <strong>Observa los mensajes detallados en la consola</strong>
+            </div>
+            <div class="step">
+                <span class="step-number">4</span>
+                <strong>Copia los mensajes de error si los hay</strong>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>🔑 Credenciales de Supabase:</h3>
+            <div class="info">
+                <strong>URL del proyecto:</strong> https://hvhmsecjrkmlqlruznfe.supabase.co<br>
+                <strong>Ayuda:</strong> Si no tienes credenciales, usa el formulario de registro en la app principal
+            </div>
+            
+            <input type="email" id="email" placeholder="tu-email@ejemplo.com" value="">
+            <input type="password" id="password" placeholder="tu-contraseña">
+        </div>
+
+        <div class="section">
+            <h3>🧪 Pruebas de Diagnóstico:</h3>
+            
+            <button onclick="diagnosticarSupabase()">1. Diagnosticar Supabase</button>
+            <button onclick="probarConexion()">2. Probar Conexión</button>
+            <button onclick="verificarSesion()">3. Verificar Sesión Actual</button>
+            <button onclick="intentarLogin()">4. Intentar Login Manual</button>
+            <button onclick="verificarUsuario()">5. Verificar Usuario en BD</button>
+            <button onclick="limpiarLogs()">🗑️ Limpiar Logs</button>
+        </div>
+
+        <div class="section">
+            <h3>📊 Resultados del Diagnóstico:</h3>
+            <div id="resultados" class="log">
+                <div style="color: #666;">Los resultados aparecerán aquí...</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>🆘 Si encuentras errores:</h3>
+            <div class="error">
+                <strong>1.</strong> Copia TODOS los mensajes de la consola (F12 → Console)<br>
+                <strong>2.</strong> Envíame los mensajes para que pueda ayudarte<br>
+                <strong>3.</strong> También puedes ejecutar: <code>node diagnostico-autenticacion.js</code> en la terminal
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuración de Supabase
+        const SUPABASE_URL = 'https://hvhmsecjrkmlqlruznfe.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2aG1zZWNqcmttbHFscnV6bmZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ3ODkxMDYsImV4cCI6MjA4MDM2NTEwNn0.zE9klNhzyoW7tDqfE-69i4crKsdtzenP0i01c5xOgE4';
+
+        let supabase;
+
+        function agregarLog(mensaje, tipo = 'info') {
+            const resultados = document.getElementById('resultados');
+            const timestamp = new Date().toLocaleTimeString();
+            const color = tipo === 'success' ? '#28a745' : tipo === 'error' ? '#dc3545' : '#17a2b8';
+            resultados.innerHTML += `<div style="color: ${color}; margin: 5px 0;">[${timestamp}] ${mensaje}</div>`;
+            resultados.scrollTop = resultados.scrollHeight;
+            
+            // También imprimir en consola para debugging
+            console.log(`[${timestamp}] ${mensaje}`);
+        }
+
+        function diagnosticarSupabase() {
+            agregarLog('=== DIAGNOSTICANDO SUPABASE ===', 'info');
+            
+            try {
+                // Verificar si Supabase está cargado
+                if (typeof window.supabase === 'undefined') {
+                    agregarLog('❌ Supabase no está cargado en window.supabase', 'error');
+                    agregarLog('Intentando cargar Supabase manualmente...', 'info');
+                    
+                    // Cargar Supabase manualmente
+                    const script = document.createElement('script');
+                    script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+                    script.onload = () => {
+                        agregarLog('✅ Supabase JS cargado desde CDN', 'success');
+                        inicializarSupabase();
+                    };
+                    script.onerror = () => {
+                        agregarLog('❌ Error al cargar Supabase desde CDN', 'error');
+                    };
+                    document.head.appendChild(script);
+                } else {
+                    agregarLog('✅ Supabase está disponible en window.supabase', 'success');
+                    inicializarSupabase();
+                }
+            } catch (error) {
+                agregarLog(`❌ Error general: ${error.message}`, 'error');
+            }
+        }
+
+        function inicializarSupabase() {
+            try {
+                if (typeof supabase === 'undefined' && typeof window.supabase !== 'undefined') {
+                    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                    agregarLog('✅ Cliente Supabase inicializado', 'success');
+                } else if (typeof supabase !== 'undefined') {
+                    agregarLog('✅ Cliente Supabase ya estaba inicializado', 'success');
+                } else {
+                    agregarLog('❌ No se pudo inicializar Supabase', 'error');
+                    return;
+                }
+                
+                // Verificar la configuración
+                agregarLog(`📡 URL: ${SUPABASE_URL}`, 'info');
+                agregarLog(`🔑 KEY: ${SUPABASE_ANON_KEY.substring(0, 20)}...`, 'info');
+                
+            } catch (error) {
+                agregarLog(`❌ Error inicializando Supabase: ${error.message}`, 'error');
+            }
+        }
+
+        async function probarConexion() {
+            agregarLog('=== PROBANDO CONEXIÓN CON SUPABASE ===', 'info');
+            
+            try {
+                if (!supabase) {
+                    agregarLog('❌ Supabase no está inicializado', 'error');
+                    return;
+                }
+
+                // Probar conexión básica
+                const { data, error } = await supabase.from('users').select('id').limit(1);
+                
+                if (error) {
+                    agregarLog(`❌ Error de conexión: ${error.message}`, 'error');
+                    agregarLog(`📋 Código de error: ${error.code}`, 'error');
+                    if (error.details) agregarLog(`📋 Detalles: ${error.details}`, 'error');
+                } else {
+                    agregarLog('✅ Conexión exitosa con Supabase', 'success');
+                    agregarLog(`📊 Datos recibidos: ${JSON.stringify(data)}`, 'success');
+                }
+            } catch (error) {
+                agregarLog(`❌ Error en prueba de conexión: ${error.message}`, 'error');
+            }
+        }
+
+        async function verificarSesion() {
+            agregarLog('=== VERIFICANDO SESIÓN ACTUAL ===', 'info');
+            
+            try {
+                if (!supabase) {
+                    agregarLog('❌ Supabase no está inicializado', 'error');
+                    return;
+                }
+
+                const { data, error } = await supabase.auth.getSession();
+                
+                if (error) {
+                    agregarLog(`❌ Error obteniendo sesión: ${error.message}`, 'error');
+                } else if (data.session) {
+                    agregarLog('✅ Sesión activa encontrada', 'success');
+                    agregarLog(`👤 Usuario: ${data.session.user.email}`, 'success');
+                    agregarLog(`🆔 ID: ${data.session.user.id}`, 'success');
+                    agregarLog(`⏰ Expira: ${new Date(data.session.expires_at * 1000).toLocaleString()}`, 'info');
+                    
+                    // Verificar metadata
+                    if (data.session.user.user_metadata) {
+                        agregarLog(`📋 Metadata: ${JSON.stringify(data.session.user.user_metadata)}`, 'info');
+                    }
+                } else {
+                    agregarLog('⚠️ No hay sesión activa', 'info');
+                    agregarLog('ℹ️ Necesitas iniciar sesión para acceder al dashboard', 'info');
+                }
+            } catch (error) {
+                agregarLog(`❌ Error verificando sesión: ${error.message}`, 'error');
+            }
+        }
+
+        async function intentarLogin() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            if (!email || !password) {
+                agregarLog('❌ Por favor ingresa email y contraseña', 'error');
+                return;
+            }
+
+            agregarLog(`=== INTENTANDO LOGIN: ${email} ===`, 'info');
+            
+            try {
+                if (!supabase) {
+                    agregarLog('❌ Supabase no está inicializado', 'error');
+                    return;
+                }
+
+                agregarLog('🔐 Enviando credenciales...', 'info');
+                
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
+
+                if (error) {
+                    agregarLog(`❌ Error en login: ${error.message}`, 'error');
+                    agregarLog(`📋 Código: ${error.code}`, 'error');
+                    
+                    // Mensajes específicos de error comunes
+                    if (error.code === 'invalid_credentials') {
+                        agregarLog('💡 Credenciales inválidas - verifica email y contraseña', 'error');
+                    } else if (error.code === 'email_not_confirmed') {
+                        agregarLog('💡 Email no confirmado - revisa tu bandeja de entrada', 'error');
+                    } else if (error.message.includes('Network')) {
+                        agregarLog('💡 Problema de red - verifica tu conexión', 'error');
+                    }
+                } else if (data.session) {
+                    agregarLog('✅ ¡Login exitoso!', 'success');
+                    agregarLog(`👤 Usuario: ${data.user.email}`, 'success');
+                    agregarLog(`🆔 ID: ${data.user.id}`, 'success');
+                    agregarLog(`⏰ Sesión expira: ${new Date(data.session.expires_at * 1000).toLocaleString()}`, 'info');
+                    
+                    // Verificar si el usuario existe en la tabla users
+                    await verificarUsuarioEnBD(data.user.id);
+                    
+                    agregarLog('🔄 Ahora deberías ser redirigido a /admin/default', 'info');
+                    agregarLog('ℹ️ Si no te redirige, hay un problema en el componente React', 'info');
+                } else {
+                    agregarLog('⚠️ Login completado pero sin sesión', 'info');
+                    agregarLog('ℹ️ Esto puede indicar que el email necesita confirmación', 'info');
+                }
+            } catch (error) {
+                agregarLog(`❌ Error intentando login: ${error.message}`, 'error');
+                agregarLog(`📋 Stack: ${error.stack}`, 'error');
+            }
+        }
+
+        async function verificarUsuarioEnBD(userId) {
+            agregarLog('=== VERIFICANDO USUARIO EN BASE DE DATOS ===', 'info');
+            
+            try {
+                if (!supabase) {
+                    agregarLog('❌ Supabase no está inicializado', 'error');
+                    return;
+                }
+
+                // Verificar si el usuario existe en la tabla users
+                const { data, error } = await supabase
+                    .from('users')
+                    .select('id, email, name, role, status, created_at')
+                    .eq('id', userId)
+                    .single();
+
+                if (error) {
+                    if (error.code === 'PGRST116') {
+                        agregarLog('⚠️ Usuario no encontrado en tabla users', 'info');
+                        agregarLog('💡 Se creará un perfil automáticamente al acceder al dashboard', 'info');
+                    } else {
+                        agregarLog(`❌ Error verificando usuario: ${error.message}`, 'error');
+                    }
+                } else if (data) {
+                    agregarLog('✅ Usuario encontrado en base de datos', 'success');
+                    agregarLog(`📋 Datos: ${JSON.stringify(data, null, 2)}`, 'success');
+                    
+                    // Verificar estado
+                    if (data.status === 'active') {
+                        agregarLog('✅ Usuario está activo', 'success');
+                    } else {
+                        agregarLog(`⚠️ Usuario tiene estado: ${data.status}`, 'info');
+                    }
+                }
+            } catch (error) {
+                agregarLog(`❌ Error verificando usuario en BD: ${error.message}`, 'error');
+            }
+        }
+
+        function limpiarLogs() {
+            document.getElementById('resultados').innerHTML = '<div style="color: #666;">Logs limpiados. Listo para nueva prueba...</div>';
+        }
+
+        // Inicializar Supabase al cargar la página
+        window.onload = function() {
+            agregarLog('🚀 Página de diagnóstico cargada', 'success');
+            agregarLog('📡 Configuración de Supabase detectada', 'info');
+            diagnosticarSupabase();
+        };
+    </script>
+</body>
+</html>

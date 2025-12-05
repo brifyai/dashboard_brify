@@ -1,0 +1,230 @@
+// Configuración de traducciones al español
+export const es = {
+  // Dashboard
+  dashboard: {
+    title: 'Panel Principal',
+    welcome: 'Bienvenido al Dashboard de Horizon UI',
+    viewAnalytics: 'Ver Análisis',
+    totalUsers: 'Usuarios Totales',
+    activeSessions: 'Sesiones Activas',
+    pageViews: 'Vistas de Página',
+    conversionRate: 'Tasa de Conversión',
+    recentActivity: 'Actividad Reciente',
+    recentTransactions: 'Transacciones Recientes',
+    viewAll: 'Ver Todo',
+    systemMetrics: 'Métricas del Sistema en Tiempo Real',
+    fileUploadManager: 'Gestor de Carga de Archivos',
+    uploadFiles: 'Cargar documentos, imágenes o cualquier archivo a tu dashboard',
+    advancedAnalytics: 'Análisis Avanzados',
+    performanceRadar: 'Radar de Rendimiento',
+    quickActions: 'Acciones Rápidas',
+    manageUsers: 'Gestionar Usuarios',
+    viewReports: 'Ver Reportes',
+    systemSettings: 'Configuración del Sistema',
+    sendNotifications: 'Enviar Notificaciones',
+    backupData: 'Respaldar Datos',
+    securityCheck: 'Verificación de Seguridad'
+  },
+
+  // Marketplace
+  marketplace: {
+    title: 'Mercado NFT',
+    subtitle: 'Explora y comercia activos digitales',
+    buyNow: 'Comprar Ahora'
+  },
+
+  // Profile
+  profile: {
+    title: 'Configuración de Perfil',
+    personalInfo: 'Información Personal',
+    accountSettings: 'Configuración de Cuenta',
+    recentActivity: 'Actividad Reciente',
+    editProfile: 'Editar Perfil',
+    saveChanges: 'Guardar Cambios',
+    cancel: 'Cancelar',
+    firstName: 'Nombre',
+    lastName: 'Apellido',
+    email: 'Correo Electrónico',
+    phone: 'Teléfono',
+    bio: 'Biografía',
+    location: 'Ubicación',
+    department: 'Departamento',
+    skills: 'Habilidades y Experiencia',
+    addSkill: 'Añadir habilidad y presionar Enter',
+    language: 'Idioma',
+    timezone: 'Zona Horaria',
+    emailNotifications: 'Notificaciones por Correo',
+    twoFactorAuth: 'Autenticación de Dos Factores',
+    completed: 'Completado',
+    growing: 'Creciendo',
+    stable: 'Estable',
+    warning: 'Advertencia',
+    high: 'Alto',
+    excellent: 'Excelente',
+    good: 'Bueno',
+    normal: 'Normal'
+  },
+
+  // Settings
+  settings: {
+    title: 'Configuración',
+    subtitle: 'Gestiona tus preferencias y configuración de la aplicación',
+    general: 'General',
+    notifications: 'Notificaciones',
+    security: 'Seguridad',
+    storage: 'Almacenamiento',
+    siteName: 'Nombre del Sitio',
+    siteDescription: 'Descripción del Sitio',
+    timezone: 'Zona Horaria',
+    dateFormat: 'Formato de Fecha',
+    language: 'Idioma',
+    theme: 'Tema',
+    light: 'Claro',
+    dark: 'Oscuro',
+    system: 'Sistema',
+    emailNotifications: 'Notificaciones por Correo',
+    pushNotifications: 'Notificaciones Push',
+    smsNotifications: 'Notificaciones SMS',
+    twoFactorAuth: 'Autenticación de Dos Factores',
+    sessionTimeout: 'Tiempo de Espera de Sesión',
+    passwordExpiry: 'Expiración de Contraseña',
+    autoBackup: 'Respaldo Automático',
+    backupFrequency: 'Frecuencia de Respaldo',
+    retention: 'Período de Retención',
+    resetAll: 'Resetear Todo',
+    deleteAccount: 'Eliminar Cuenta',
+    saveChanges: 'Guardar Cambios',
+    reset: 'Resetear',
+    dangerZone: 'Zona de Peligro',
+    dangerDescription: 'Estas acciones son irreversibles. Por favor procede con cautela.',
+    resetAllSettings: 'Resetear Toda la Configuración',
+    deleteAccountWarning: 'Eliminar permanentemente tu cuenta y todos los datos asociados',
+    userManagement: 'Gestión de Usuarios',
+    addUser: 'Agregar Usuario',
+    loadingUsers: 'Cargando usuarios...',
+    name: 'Nombre',
+    email: 'Email',
+    role: 'Rol',
+    status: 'Estado',
+    createdAt: 'Fecha Creación',
+    actions: 'Acciones',
+    editUser: 'Editar usuario',
+    deleteUser: 'Eliminar usuario',
+    confirmDelete: '¿Estás seguro de que deseas eliminar este usuario?',
+    noUsers: 'No hay usuarios registrados',
+    addNewUser: 'Agregar Nuevo Usuario',
+    enterName: 'Ingresa el nombre',
+    enterEmail: 'Ingresa el email',
+    password: 'Contraseña',
+    enterPassword: 'Ingresa la contraseña',
+    user: 'Usuario',
+    moderator: 'Moderador',
+    admin: 'Administrador',
+    active: 'Activo',
+    inactive: 'Inactivo',
+    cancel: 'Cancelar',
+    update: 'Actualizar',
+    create: 'Crear'
+  },
+
+  // Auth
+  auth: {
+    signIn: 'Iniciar Sesión',
+    welcomeBack: 'Bienvenido de Nuevo',
+    enterCredentials: 'Ingresa tus credenciales para acceder a tu cuenta',
+    email: 'Correo Electrónico',
+    password: 'Contraseña',
+    signInButton: 'Iniciar Sesión',
+    dontHaveAccount: '¿No tienes una cuenta?',
+    signUp: 'Regístrate'
+  },
+
+  // Data Tables
+  datatables: {
+    title: 'Tablas de Datos',
+    subtitle: 'Gestión avanzada de datos con ordenamiento, filtrado y paginación',
+    totalUsers: 'Usuarios Totales',
+    activeUsers: 'Usuarios Activos',
+    totalRevenue: 'Ingresos Totales',
+    avgRevenue: 'Ingresos Promedio',
+    userManagement: 'Gestión de Usuarios',
+    recentTransactions: 'Transacciones Recientes',
+    customer: 'Cliente',
+    date: 'Fecha',
+    amount: 'Monto',
+    status: 'Estado',
+    completed: 'Completado',
+    pending: 'Pendiente',
+    failed: 'Fallido',
+    showing: 'Mostrando',
+    to: 'a',
+    of: 'de',
+    entries: 'entradas',
+    search: 'Buscar...',
+    show: 'Mostrar',
+    filter: 'Filtrar'
+  },
+
+  // Sidebar
+  sidebar: {
+    dashboard: 'Panel',
+    nftMarketplace: 'Mercado NFT',
+    dataTables: 'Tablas de Datos',
+    profile: 'Perfil',
+    settings: 'Configuración',
+    signIn: 'Iniciar Sesión'
+  },
+
+  // Notifications
+  notifications: {
+    title: 'Notificaciones',
+    noNotifications: 'No hay notificaciones aún',
+    whenNotifications: 'Cuando tengas notificaciones, aparecerán aquí',
+    markAllRead: 'Marcar todo como leído',
+    clearAll: 'Limpiar todo',
+    profileUpdated: 'Perfil Actualizado',
+    profileUpdatedDesc: 'Tu perfil ha sido actualizado exitosamente',
+    newFeature: 'Nueva Función Disponible',
+    newFeatureDesc: 'Revisa las nuevas características del panel de análisis',
+    storageLimit: 'Límite de Almacenamiento',
+    storageLimitDesc: 'Te estás acercando a tu límite de almacenamiento',
+    paymentFailed: 'Pago Fallido',
+    paymentFailedDesc: 'Tu último intento de pago fue fallido'
+  },
+
+  // Errors
+  errors: {
+    pageNotFound: 'Página No Encontrada',
+    pageNotFoundDesc: '¡Ups! La página que estás buscando no existe.',
+    movedDeleted: 'Puede que haya sido movida, eliminada, o hayas ingresado la URL incorrecta.',
+    checkTypos: 'Verifica la URL por errores de escritura',
+    goBack: 'Ir Atrás',
+    goHome: 'Ir al Inicio',
+    needHelp: '¿Necesitas más ayuda?',
+    contactSupport: 'Contactar Soporte',
+    viewDocumentation: 'Ver Documentación',
+    profileNotFound: 'Perfil No Encontrado',
+    profileNotFoundDesc: 'No se pudo cargar la información del perfil. Verifica tu conexión e intenta nuevamente.'
+  },
+
+  // Common
+  common: {
+    save: 'Guardar',
+    cancel: 'Cancelar',
+    edit: 'Editar',
+    delete: 'Eliminar',
+    close: 'Cerrar',
+    loading: 'Cargando...',
+    error: 'Error',
+    success: 'Éxito',
+    warning: 'Advertencia',
+    info: 'Información',
+    online: 'En Línea',
+    offline: 'Fuera de Línea',
+    active: 'Activo',
+    inactive: 'Inactivo',
+    live: 'En Vivo'
+  }
+};
+
+export default es;

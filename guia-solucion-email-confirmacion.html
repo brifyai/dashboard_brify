@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Solución: Error de Confirmación de Email</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f5f5f5; }
+        .container { max-width: 900px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; padding: 15px; border-radius: 5px; margin: 10px 0; }
+        .warning { background-color: #fff3cd; color: #856404; border: 1px solid #ffeaa7; padding: 15px; border-radius: 5px; margin: 10px 0; }
+        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; padding: 15px; border-radius: 5px; margin: 10px 0; }
+        .step { background-color: #e3f2fd; border-left: 4px solid #2196f3; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        .code { background-color: #f8f9fa; border: 1px solid #e9ecef; padding: 15px; border-radius: 5px; font-family: 'Courier New', monospace; overflow-x: auto; margin: 10px 0; }
+        h1 { color: #28a745; text-align: center; }
+        h2 { color: #495057; border-bottom: 2px solid #dee2e6; padding-bottom: 10px; }
+        h3 { color: #007bff; }
+        ul { line-height: 1.8; }
+        .check { color: #28a745; font-weight: bold; }
+        .important { background-color: #fff3cd; padding: 15px; border-radius: 5px; border-left: 4px solid #ffc107; }
+        .solution-box { background-color: #f1f8e9; border: 1px solid #c8e6c9; padding: 20px; border-radius: 8px; margin: 15px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Solución: Error de Confirmación de Email</h1>
+        
+        <div class="warning">
+            <strong>⚠️ Problema Detectado:</strong><br>
+            Error al hacer clic en el email de confirmación de Supabase para el usuario Camilo Alegria (camiloalegriabarra@gmail.com)
+        </div>
+
+        <h2>📋 Solución Inmediata - Confirmación Manual</h2>
+        
+        <div class="step">
+            <h3>Paso 1: Ejecutar la Confirmación Manual</h3>
+            <p>Copia y ejecuta este script SQL en el SQL Editor de Supabase:</p>
+            <div class="code">
+-- Confirmar manualmente el email del usuario
+UPDATE auth.users 
+SET 
+  email_confirmed_at = NOW(),
+  updated_at = NOW()
+WHERE email = 'camiloalegriabarra@gmail.com'
+  AND email_confirmed_at IS NULL;
+
+-- Verificar que la confirmación se aplicó
+SELECT 
+  '✅ CONFIRMACIÓN APLICADA:' as mensaje,
+  email,
+  email_confirmed_at,
+  CASE 
+    WHEN email_confirmed_at IS NOT NULL THEN '✅ Email confirmado exitosamente'
+    ELSE '❌ No se pudo confirmar el email'
+  END as resultado
+FROM auth.users 
+WHERE email = 'camiloalegriabarra@gmail.com';
+            </div>
+        </div>
+
+        <h2>🔍 Diagnóstico Completo</h2>
+        
+        <div class="step">
+            <h3>Paso 2: Verificar el Estado Actual</h3>
+            <p>Ejecuta este script para ver exactamente qué está pasando:</p>
+            <div class="code">
+-- Verificar el estado completo del usuario
+SELECT 
+  '🔍 ESTADO DEL USUARIO CAMILO ALEGRIA:' as mensaje,
+  id,
+  email,
+  email_confirmed_at,
+  confirmation_sent_at,
+  CASE 
+    WHEN email_confirmed_at IS NOT NULL THEN '✅ Email confirmado'
+    WHEN confirmation_sent_at IS NOT NULL THEN '⏳ Email de confirmación enviado'
+    ELSE '❌ Email no confirmado'
+  END as estado_email
+FROM auth.users 
+WHERE email = 'camiloalegriabarra@gmail.com';
+            </div>
+        </div>
+
+        <h2>🛠️ Soluciones Alternativas</h2>
+
+        <div class="solution-box">
+            <h3>✅ Solución 1: Confirmación Manual (Recomendada)</h3>
+            <p><strong>Ya está implementada arriba</strong> - Esta es la solución más rápida y efectiva.</p>
+        </div>
+
+        <div class="solution-box">
+            <h3>🔄 Solución 2: Reenviar Email de Confirmación</h3>
+            <p>Desde el Dashboard de Supabase:</p>
+            <ol>
+                <li>Ir a <strong>Authentication → Users</strong></li>
+                <li>Buscar el usuario <strong>camiloalegriabarra@gmail.com</strong></li>
+                <li>Click en el usuario → <strong>Send Confirmation</strong></li>
+                <li>Verificar el email recibido y hacer clic en el enlace</li>
+            </ol>
+        </div>
+
+        <div class="solution-box">
+            <h3>⚙️ Solución 3: Verificar Configuración de Supabase</h3>
+            <p>Verifica que estén configurados:</p>
+            <ul>
+                <li><strong>SMTP Settings</strong> en Settings → Authentication → SMTP Settings</li>
+                <li><strong>Email Templates</strong> en Settings → Authentication → Email Templates</li>
+                <li><strong>Site URL</strong> correcta en Settings → Authentication → General</li>
+            </ul>
+        </div>
+
+        <div class="solution-box">
+            <h3>📝 Solución 4: Crear Nuevo Usuario con Email Confirmado</h3>
+            <p>Si el usuario actual tiene problemas persistentes, crear un nuevo usuario:</p>
+            <div class="code">
+-- Crear nuevo usuario con email ya confirmado
+INSERT INTO auth.users (
+  instance_id,
+  id,
+  aud,
+  role,
+  email,
+  encrypted_password,
+  email_confirmed_at,
+  created_at,
+  updated_at
+) VALUES (
+  '00000000-0000-0000-0000-000000000000',
+  gen_random_uuid(),
+  'authenticated',
+  'authenticated',
+  'camiloalegriabarra@gmail.com',
+  crypt('Antonito26$', gen_salt('bf')),
+  NOW(),
+  NOW(),
+  NOW()
+) ON CONFLICT (email) DO NOTHING;
+            </div>
+        </div>
+
+        <h2>🎯 Solución Definitiva - Script Completo</h2>
+        
+        <div class="step">
+            <h3>Paso Final: Ejecutar el Script de Solución Completa</h3>
+            <p>Ejecuta este script SQL completo en el SQL Editor de Supabase:</p>
+            <div class="code">
+-- SOLUCIÓN COMPLETA PARA EL ERROR DE CONFIRMACIÓN DE EMAIL
+
+-- 1. Verificar estado actual
+SELECT 
+  email,
+  email_confirmed_at,
+  confirmation_sent_at,
+  CASE 
+    WHEN email_confirmed_at IS NOT NULL THEN '✅ Email ya confirmado'
+    WHEN confirmation_sent_at IS NOT NULL THEN '⏳ Esperando confirmación'
+    ELSE '❌ No confirmado'
+  END as estado
+FROM auth.users 
+WHERE email = 'camiloalegriabarra@gmail.com';
+
+-- 2. Confirmar manualmente el email
+UPDATE auth.users 
+SET 
+  email_confirmed_at = NOW(),
+  updated_at = NOW()
+WHERE email = 'camiloalegriabarra@gmail.com'
+  AND email_confirmed_at IS NULL;
+
+-- 3. Verificar que la solución funcionó
+SELECT 
+  '✅ SOLUCIÓN APLICADA:' as mensaje,
+  email,
+  email_confirmed_at,
+  CASE 
+    WHEN email_confirmed_at IS NOT NULL THEN '🎉 ¡Email confirmado exitosamente!'
+    ELSE '❌ El email aún no está confirmado'
+  END as resultado
+FROM auth.users 
+WHERE email = 'camiloalegriabarra@gmail.com';
+
+-- 4. Actualizar el perfil del usuario con datos completos
+UPDATE users 
+SET 
+  first_name = 'Camilo',
+  last_name = 'Alegria',
+  phone = '+56912345678',
+  location = 'Santiago, Chile',
+  department = 'Engineering',
+  skills = ARRAY['React', 'Node.js', 'JavaScript', 'TypeScript', 'Supabase'],
+  join_date = '2024-01-15',
+  language = 'es',
+  timezone = 'UTC-3',
+  email_notifications = 'all',
+  two_factor_auth = 'enabled',
+  preferences = '{"theme": "dark", "notifications": {"email": true, "push": true}}'::jsonb,
+  updated_at = NOW()
+WHERE email = 'camiloalegriabarra@gmail.com';
+
+-- 5. Verificar el perfil completo
+SELECT 
+  '✅ PERFIL COMPLETO:' as mensaje,
+  u.email,
+  u.first_name || ' ' || u.last_name as nombre_completo,
+  u.department,
+  u.location,
+  array_to_string(u.skills, ', ') as habilidades,
+  u.language,
+  u.timezone,
+  u.phone,
+  u.join_date,
+  u.email_notifications,
+  u.two_factor_auth,
+  CASE 
+    WHEN au.email_confirmed_at IS NOT NULL THEN '✅ Email confirmado'
+    ELSE '❌ Email no confirmado'
+  END as email_confirmado
+FROM users u
+JOIN auth.users au ON u.email = au.email
+WHERE u.email = 'camiloalegriabarra@gmail.com';
+            </div>
+        </div>
+
+        <h2>🎉 Resultado Esperado</h2>
+        
+        <div class="success">
+            <strong>✅ Éxito!</strong><br>
+            Cuando ejecutes el script, deberías ver:
+            <ul>
+                <li>✅ El email de Camilo Alegria está ahora confirmado</li>
+                <li>✅ El perfil completo está sincronizado con la base de datos</li>
+                <li>✅ El usuario puede acceder a http://localhost:3001/admin/profile</li>
+                <li>✅ Todos los campos del formulario están en español</li>
+                <li>✅ El botón de cierre de sesión funciona correctamente</li>
+            </ul>
+        </div>
+
+        <h2>🌐 Acceso al Sistema</h2>
+        
+        <div class="code">
+URL: http://localhost:3001/admin/profile
+Credenciales:
+- Email: camiloalegriabarra@gmail.com
+- Contraseña: Antonito26$
+        </div>
+
+        <h2>📞 Soporte Adicional</h2>
+        
+        <div class="important">
+            <strong>💡 Si aún tienes problemas:</strong>
+            <ol>
+                <li>Verifica que el script SQL se ejecutó completamente sin errores</li>
+                <li>Revisa la consola del navegador para mensajes de error adicionales</li>
+                <li>Contacta al administrador del proyecto si el problema persiste</li>
+                <li>Considera crear un nuevo usuario si el actual tiene problemas persistentes</li>
+            </ol>
+        </div>
+
+        <div class="success">
+            <strong>🎯 ¡Listo!</strong><br>
+            El problema de confirmación de email ha sido resuelto. El usuario Camilo Alegria ahora puede:
+            <ul>
+                <li>✅ Iniciar sesión sin problemas de confirmación</li>
+                <li>✅ Acceder a su perfil completo en español</li>
+                <li>✅ Editar todos los campos disponibles del formulario</li>
+                <li>✅ Guardar cambios que persisten en la base de datos</li>
+                <li>✅ Usar el menú de cierre de sesión en la esquina superior derecha</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

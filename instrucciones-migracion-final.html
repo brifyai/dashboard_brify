@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Instrucciones de Migración - Perfil de Usuario</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f5f5f5; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; padding: 15px; border-radius: 5px; margin: 10px 0; }
+        .warning { background-color: #fff3cd; color: #856404; border: 1px solid #ffeaa7; padding: 15px; border-radius: 5px; margin: 10px 0; }
+        .step { background-color: #e3f2fd; border-left: 4px solid #2196f3; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        .code { background-color: #f8f9fa; border: 1px solid #e9ecef; padding: 15px; border-radius: 5px; font-family: 'Courier New', monospace; overflow-x: auto; margin: 10px 0; }
+        h1 { color: #28a745; text-align: center; }
+        h2 { color: #495057; border-bottom: 2px solid #dee2e6; padding-bottom: 10px; }
+        h3 { color: #007bff; }
+        ul { line-height: 1.8; }
+        .check { color: #28a745; font-weight: bold; }
+        .important { background-color: #fff3cd; padding: 15px; border-radius: 5px; border-left: 4px solid #ffc107; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Instrucciones de Migración - Perfil de Usuario</h1>
+        
+        <div class="success">
+            <strong>✅ Objetivo</strong><br>
+            Sincronizar todos los campos del formulario de perfil en <strong>http://localhost:3001/admin/profile</strong> con la tabla <code>users</code> de Supabase.
+        </div>
+
+        <h2>📋 Pasos para Ejecutar la Migración</h2>
+        
+        <div class="step">
+            <h3>Paso 1: Acceder al SQL Editor de Supabase</h3>
+            <ol>
+                <li>Ir a <a href="https://app.supabase.com" target="_blank">https://app.supabase.com</a></li>
+                <li>Seleccionar tu proyecto</li>
+                <li>Hacer clic en "SQL Editor" en el menú lateral</li>
+                <li>Borrar cualquier código existente en el editor</li>
+            </ol>
+        </div>
+        
+        <div class="step">
+            <h3>Paso 2: Ejecutar el Script de Migración</h3>
+            <div class="important">
+                <strong>⚠️ IMPORTANTE:</strong> Ejecutar TODO el siguiente script de una sola vez en el SQL Editor
+            </div>
+            <div class="code">
+-- MIGRACIÓN PARA SUPABASE - EJECUTAR TODO DE UNA VEZ
+
+-- Verificar si existe el usuario Camilo Alegria
+SELECT email, name FROM users WHERE email = 'camiloalegriabarra@gmail.com';
+
+-- Si no existe, crearlo manualmente
+INSERT INTO users (
+  id,
+  email,
+  name,
+  status,
+  created_at,
+  updated_at
+) VALUES (
+  'cd6fd2b0-6e8b-45ba-8de5-933f116f4041',
+  'camiloalegriabarra@gmail.com',
+  'Camilo Alegria',
+  'active',
+  NOW(),
+  NOW()
+) ON CONFLICT (email) DO NOTHING;
+
+-- Agregar campos adicionales si no existen
+ALTER TABLE users 
+ADD COLUMN IF NOT EXISTS first_name TEXT,
+ADD COLUMN IF NOT EXISTS last_name TEXT,
+ADD COLUMN IF NOT EXISTS phone TEXT,
+ADD COLUMN IF NOT EXISTS location TEXT,
+ADD COLUMN IF NOT EXISTS department TEXT,
+ADD COLUMN IF NOT EXISTS skills TEXT[],
+ADD COLUMN IF NOT EXISTS join_date DATE,
+ADD COLUMN IF NOT EXISTS language TEXT DEFAULT 'es',
+ADD COLUMN IF NOT EXISTS timezone TEXT DEFAULT 'UTC-3',
+ADD COLUMN IF NOT EXISTS email_notifications TEXT DEFAULT 'all',
+ADD COLUMN IF NOT EXISTS two_factor_auth TEXT DEFAULT 'disabled',
+ADD COLUMN IF NOT EXISTS preferences JSONB DEFAULT '{}';
+
+-- Actualizar el perfil de Camilo Alegria con datos completos
+UPDATE users 
+SET 
+  first_name = 'Camilo',
+  last_name = 'Alegria',
+  phone = '+56912345678',
+  location = 'Santiago, Chile',
+  department = 'Engineering',
+  skills = ARRAY['React', 'Node.js', 'JavaScript', 'TypeScript', 'Supabase'],
+  join_date = '2024-01-15',
+  language = 'es',
+  timezone = 'UTC-3',
+  email_notifications = 'all',
+  two_factor_auth = 'enabled',
+  bio = 'Ingeniero de software con experiencia en React, Node.js y desarrollo web moderno. Apasionado por crear soluciones innovadoras y eficientes.',
+  avatar_url = 'https://api.dicebear.com/7.x/avataaars/svg?seed=CamiloAlegria',
+  preferences = '{"theme": "dark", "notifications": {"email": true, "push": true}}'::jsonb,
+  updated_at = NOW()
+WHERE email = 'camiloalegriabarra@gmail.com';
+
+-- Verificar la actualización
+SELECT 
+  email,
+  first_name || ' ' || last_name as full_name,
+  department,
+  location,
+  array_to_string(skills, ', ') as habilidades,
+  language,
+  timezone,
+  phone,
+  bio,
+  join_date,
+  email_notifications,
+  two_factor_auth
+FROM users 
+WHERE email = 'camiloalegriabarra@gmail.com';
+            </div>
+        </div>
+        
+        <div class="step">
+            <h3>Paso 3: Ejecutar el Script</h3>
+            <ol>
+                <li>Copiar TODO el script anterior</li>
+                <li>Pegarlo en el SQL Editor de Supabase</li>
+                <li>Hacer clic en "RUN" o presionar Ctrl+Enter</li>
+                <li>Esperar a que se complete la ejecución</li>
+            </ol>
+        </div>
+        
+        <div class="step">
+            <h3>Paso 4: Verificar el Resultado</h3>
+            <p>Después de ejecutar, deberías ver:</p>
+            <ul>
+                <li>✅ Un mensaje indicando que el usuario fue creado o actualizado</li>
+                <li>✅ Los datos completos de Camilo Alegria con todos los campos nuevos</li>
+                <li>✅ La información en español</li>
+            </ul>
+        </div>
+
+        <h2>🧪 Verificación Rápida</h2>
+        
+        <div class="code">
+-- Verificar que la migración funcionó
+SELECT 
+  '✅ MIGRACIÓN EXITOSA' as estado,
+  email,
+  first_name || ' ' || last_name as nombre_completo,
+  department,
+  location,
+  array_to_string(skills, ', ') as habilidades,
+  language,
+  timezone,
+  phone,
+  bio,
+  join_date
+FROM users 
+WHERE email = 'camiloalegriabarra@gmail.com';
+        </div>
+
+        <h2>🎯 Campos Sincronizados</h2>
+        
+        <div class="field-list">
+            <h3>📋 Mapeo Completo:</h3>
+            <ul>
+                <li><strong>firstName</strong> → <code>first_name</code></li>
+                <li><strong>lastName</strong> → <code>last_name</code></li>
+                <li><strong>email</strong> → <code>email</code></li>
+                <li><strong>phone</strong> → <code>phone</code></li>
+                <li><strong>bio</strong> → <code>bio</code></li>
+                <li><strong>department</strong> → <code>department</code></li>
+                <li><strong>location</strong> → <code>location</code></li>
+                <li><strong>skills</strong> → <code>skills</code> (array)</li>
+                <li><strong>language</strong> → <code>language</code></li>
+                <li><strong>timezone</strong> → <code>timezone</code></li>
+                <li><strong>emailNotifications</strong> → <code>email_notifications</code></li>
+                <li><strong>twoFactorAuth</strong> → <code>two_factor_auth</code></li>
+                <li><strong>avatarUrl</strong> → <code>avatar_url</code></li>
+            </ul>
+        </div>
+
+        <h2>🌐 Acceso al Perfil</h2>
+        <div class="code">
+URL: http://localhost:3001/admin/profile
+
+Credenciales:
+- Email: camiloalegriabarra@gmail.com
+- Contraseña: Antonito26$
+        </div>
+
+        <h2>⚠️ Solución de Problemas</h2>
+        
+        <div class="warning">
+            <strong>❌ Error: "relation 'users' does not exist"</strong><br>
+            <strong>Solución:</strong> Asegúrate de que el proyecto de Supabase esté correctamente configurado y que la tabla users haya sido creada previamente.
+        </div>
+        
+        <div class="warning">
+            <strong>❌ Error: "permission denied"</strong><br>
+            <strong>Solución:</strong> Verifica que tengas permisos de administrador en el proyecto de Supabase.
+        </div>
+        
+        <div class="warning">
+            <strong>❌ Error: "unique constraint"</strong><br>
+            <strong>Solución:</strong> El usuario ya existe, usa un UPDATE en lugar de INSERT.
+        </div>
+
+        <h2>✅ Confirmación de Éxito</h2>
+        
+        <div class="success">
+            <strong>🎉 ¡Listo!</strong><br>
+            Cuando la migración se ejecute correctamente:
+            <ul>
+                <li>✅ El formulario de perfil mostrará los datos reales de Camilo Alegria</li>
+                <li>✅ Todos los campos estarán editables y guardarán en la base de datos</li>
+                <li>✅ La interfaz estará completamente en español</li>
+                <li>✅ Los cambios persistirán al recargar la página</li>
+            </ul>
+        </div>
+
+        <div class="important">
+            <strong>💡 Nota Final:</strong> Si tienes problemas, ejecuta cada sección del script SQL por separado para identificar en qué parte está fallando.
+        </div>
+    </div>
+</body>
+</html>
